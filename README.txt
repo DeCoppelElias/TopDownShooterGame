@@ -1,1 +1,1 @@
-This is a simple game I made.
+This is a simple game I made. Please mention me if you use my code.
