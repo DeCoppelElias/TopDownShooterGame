@@ -277,7 +277,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerReflectShield: {fileID: 4275745250244666332, guid: 53734d34131d8494d867a7fc2439dac7, type: 3}
   enemyReflectShield: {fileID: 9205213379581261609, guid: 2432446cfb8d33641b3442a38d3924a6, type: 3}
-  duration: 2
+  reflectShieldState: 0
+  reflectShieldDuration: 0.2
+  reflectShieldCooldown: 3
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
+  relfectingBulletSprite: {fileID: 21300000, guid: 527fac237c2d6e040b5d78b91144a2bf, type: 3}
 --- !u!114 &-3252742793716021005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,6 +303,10 @@ MonoBehaviour:
   health: 100
   damage: 10
   moveSpeed: 2
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  outOfBounds: 0
   attackSpeed: 10
   xp: 10
   bulletDirection: {x: 0, y: 0, z: 0}

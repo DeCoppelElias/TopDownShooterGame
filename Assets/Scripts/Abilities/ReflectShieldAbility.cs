@@ -23,6 +23,8 @@ public class ReflectShieldAbility : MonoBehaviour
     public UnityEvent onPerformed;
     public UnityEvent onReady;
 
+    public Sprite relfectingBulletSprite;
+
     private void Start()
     {
         GameObject reflectShield = playerReflectShield;
@@ -33,6 +35,10 @@ public class ReflectShieldAbility : MonoBehaviour
         currentShield = Instantiate(reflectShield, transform.position, Quaternion.identity);
         currentShield.transform.SetParent(transform);
         currentShield.transform.localScale = new Vector3(1, 1, 1);
+
+        currentShield.GetComponent<ReflectShield>().bulletSprite = relfectingBulletSprite;
+        currentShield.GetComponent<ReflectShield>().owner = this.gameObject.name;
+
         currentShield.SetActive(false);
     }
 

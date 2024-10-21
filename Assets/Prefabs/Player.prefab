@@ -239,6 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 851803754f2131540bb53153a31b6757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collectInput: 1
 --- !u!114 &2612322234304606013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,6 +269,13 @@ MonoBehaviour:
   reflectShieldState: 0
   reflectShieldDuration: 2
   reflectShieldCooldown: 3
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
+  relfectingBulletSprite: {fileID: 21300000, guid: caf00c33b8237814baa13f3e6d482b43, type: 3}
 --- !u!114 &2952285022420082849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,6 +294,12 @@ MonoBehaviour:
   chargeDuration: 0
   dashSpeed: 20
   contactDamageIncrease: 5
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2952285022420082848
 MonoBehaviour:
   m_ObjectHideFlags: 0

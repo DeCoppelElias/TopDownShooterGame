@@ -99,14 +99,8 @@ public class Bullet : MonoBehaviour
     {
         GameObject newBulletGameObject = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
         newBulletGameObject.GetComponent<Bullet>().createTime = Time.time;
-        if (owner == "Player")
-        {
-            newBulletGameObject.GetComponent<Bullet>().owner = owner;
-        }
-        else
-        {
-            newBulletGameObject.GetComponent<Bullet>().owner = owner;
-        }
+        newBulletGameObject.GetComponent<Bullet>().owner = owner;
+
         return newBulletGameObject;
     }
 }

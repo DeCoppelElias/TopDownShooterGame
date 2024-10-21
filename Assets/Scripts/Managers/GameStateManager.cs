@@ -9,7 +9,6 @@ public class GameStateManager : MonoBehaviour
 
     [SerializeField]
     private State state;
-
     public void ToPaused()
     {
         this.state = State.PAUSED;
@@ -26,6 +25,11 @@ public class GameStateManager : MonoBehaviour
     {
         this.state = State.RUNNING;
         Time.timeScale = 1;
+    }
+
+    public bool IsPaused()
+    {
+        return this.state == State.PAUSED;
     }
 
     public void QuitToMainMenu()

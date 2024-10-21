@@ -16,6 +16,10 @@ public class PlayerController : MonoBehaviour
     private ShootingAbility shootAbility;
     private ReflectShieldAbility reflectAbility;
 
+    private GameStateManager gameStateManager;
+
+    public bool collectInput = true;
+
     private void Start()
     {
         this.player = this.GetComponent<Player>();
@@ -26,10 +30,14 @@ public class PlayerController : MonoBehaviour
         this.dashAbility = this.GetComponent<DashAbility>();
         this.shootAbility = this.GetComponent<ShootingAbility>();
         this.reflectAbility = this.GetComponent<ReflectShieldAbility>();
+
+        this.gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
     }
 
     public void Dash(InputAction.CallbackContext context)
     {
+        if (gameStateManager.IsPaused()) return;
+        if (!collectInput) return;
         if (dashAbility == null) return;
 
         if (context.performed)
@@ -41,6 +49,8 @@ public class PlayerController : MonoBehaviour
 
     public void Shoot(InputAction.CallbackContext context)
     {
+        if (gameStateManager.IsPaused()) return;
+        if (!collectInput) return;
         if (shootAbility == null) return;
 
         if (context.performed)
@@ -64,6 +74,8 @@ public class PlayerController : MonoBehaviour
 
     public void Reflect(InputAction.CallbackContext context)
     {
+        if (gameStateManager.IsPaused()) return;
+        if (!collectInput) return;
         if (reflectAbility == null) return;
 
         if (context.performed)
@@ -74,6 +86,8 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        if (gameStateManager.IsPaused()) return;
+        if (!collectInput) return;
         if (playerMovement == null) return;
 
         Vector2 movementInput = Vector2.zero;
