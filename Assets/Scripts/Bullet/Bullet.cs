@@ -29,61 +29,21 @@ public class Bullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (owner == "Enemy" && collision.tag == "Player")
-        {
-            Player player = collision.GetComponent<Player>();
-            player.TakeDamage(damage);
-            pierce--;
-            if (pierce == 0)
-            {
-                BulletHit();
-            }
-        }
-        else if (owner == "Player" && collision.tag == "Enemy")
-        {
-            Enemy enemy = collision.GetComponent<Enemy>();
-            enemy.TakeDamage(damage);
-            pierce--;
-            if (pierce == 0)
-            {
-                BulletHit();
-            }
-        }
-        else if (collision.tag == "ReflectWall")
-        {
-            Tilemap tileMap = collision.gameObject.GetComponent<Tilemap>();
-            CustomWallTile tile = (CustomWallTile)tileMap.GetTile(Vector3Int.FloorToInt(transform.position));
-            Rigidbody2D rb = GetComponent<Rigidbody2D>();
-
-            // the vector that we want to measure an angle from
-            Vector3 referenceForward = Vector3.right; /* some vector that is not Vector3.up */
-            /*if (tile.getTileState(Vector3Int.FloorToInt(transform.position)) == CustomWallTile.TileState.Vertical)
-            {
-                referenceForward = Vector3.down;
-            }*/
-            // the vector perpendicular to referenceForward (90 degrees clockwise)
-            // (used to determine if angle is positive or negative)
-            Vector3 referenceRight = Quaternion.Euler(0, 0, 90) * referenceForward;
-            // the vector of interest
-            Vector3 newDirection = rb.velocity.normalized; /* some vector that we're interested in */
-            // Get the angle in degrees between 0 and 180
-            float angle = Vector3.Angle(newDirection, referenceForward);
-            // Determine if the degree value should be negative.  Here, a positive value
-            // from the dot product means that our vector is on the right of the reference vector   
-            // whereas a negative value means we're on the left.
-            float sign = Mathf.Sign(Vector3.Dot(newDirection, referenceRight));
-            float finalAngle = sign * angle;
-            float rotateAngle = -(2 * finalAngle);
-
-            Vector3 reflectVelocity = (Quaternion.Euler(0, 0, rotateAngle) * rb.velocity);
-            GameObject newBullet = CreateCopy(owner);
-            newBullet.transform.position += reflectVelocity.normalized *0.3f;
-            newBullet.GetComponent<Rigidbody2D>().AddForce(reflectVelocity, ForceMode2D.Impulse);
-            Destroy(this.gameObject);
-        }
-        else if (collision.tag == "Wall")
+        if (collision.tag == "Wall")
         {
             BulletHit();
+            return;
+        }
+
+        Entity entity = collision.GetComponent<Entity>();
+        if (entity != null && owner != collision.name)
+        {
+            entity.TakeDamage(damage);
+            pierce--;
+            if (pierce == 0)
+            {
+                BulletHit();
+            }
         }
     }
 

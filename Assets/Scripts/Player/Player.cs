@@ -96,5 +96,6 @@ public class Player : Entity
     public override void OnDeath()
     {
         onDeath.Invoke();
+        Destroy(this.gameObject);
     }
 }
