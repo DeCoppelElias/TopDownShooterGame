@@ -10,7 +10,7 @@ public class ReflectMeleeEnemy : MeleeEnemy
     {
         if (bulletTrigger && Time.time > lastUse + cooldown)
         {
-            GetComponent<ReflectShieldAbility>().CreateReflectShield();
+            GetComponent<ReflectShieldAbility>().EnableReflectShield();
             lastUse = Time.time;
         }
         else if (bulletTrigger)

@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(DashAbility))]
 public class ChargingMeleeEnemy : Enemy
 {
-    private DashAbility.DashingState dashingState = DashAbility.DashingState.Ready;
-    private Vector3 dashDirection;
-    public float dashCooldown = 0;
-    private float lastUse = 0;
+    private DashAbility dashAbility;
+
+    public override void StartEntity()
+    {
+        base.StartEntity();
+
+        dashAbility = GetComponent<DashAbility>();
+    }
     private void FixedUpdate()
     {
-        if(Vector2.Distance(gameObject.transform.position, player.transform.position) < GetComponent<DashAbility>().dashSpeed * GetComponent<DashAbility>().dashDuration / 2 && Time.time > lastUse + dashCooldown && dashingState == DashAbility.DashingState.Ready)
+        if(Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() / 2f)
         {
-            dashDirection = player.transform.position - transform.position;
-            dashingState = GetComponent<DashAbility>().Dash(dashDirection);
-            lastUse = Time.time;
-        }
-        else if(dashingState == DashAbility.DashingState.Charging || dashingState == DashAbility.DashingState.Dashing)
-        {
-            dashingState = GetComponent<DashAbility>().Dash(dashDirection);
+            Vector3 dashDirection = player.transform.position - transform.position;
+            dashAbility.Dash(dashDirection);
         }
         else
         {

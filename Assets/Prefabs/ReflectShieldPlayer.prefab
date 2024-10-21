@@ -122,6 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91d0215949a6ec84d9d0b32e06ec558a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerBullet: {fileID: 4050574258624113803, guid: ae862bf17e6f19043a7b1d777ddd48da, type: 3}
-  enemyBullet: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}
+  playerBullet: {fileID: 21300000, guid: caf00c33b8237814baa13f3e6d482b43, type: 3}
+  enemyBullet: {fileID: 21300000, guid: 527fac237c2d6e040b5d78b91144a2bf, type: 3}
   shieldType: 0

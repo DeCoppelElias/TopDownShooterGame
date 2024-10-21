@@ -6,15 +6,20 @@ public class RangedEnemy : Enemy
 {
     public float lastShot = 0;
     private float range;
+    private SpriteRenderer enemySprite;
+
+    private bool playerInRange = false;
+    private float startPlayerInRange = 0;
+    private float aimingDuration = 0.5f;
     public override void StartEntity()
     {
         range = GetComponent<ShootingAbility>().range;
+        enemySprite = transform.Find("EnemySprite").GetComponent<SpriteRenderer>();
     }
     private void FixedUpdate()
     {
-        Vector2 lookDir = player.transform.position - gameObject.transform.position;
-        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
-        gameObject.GetComponent<Rigidbody2D>().rotation = angle;
+        Vector2 lookDir = (player.transform.position - gameObject.transform.position).normalized;
+        enemySprite.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDir);
 
         Vector3 raycastDirection = player.transform.position - transform.position;
         RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
@@ -30,13 +35,25 @@ public class RangedEnemy : Enemy
         {
             if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= range)
             {
-                Vector3 raycastDirection = player.transform.position - transform.position;
-                RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
-                if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
+                if (playerInRange && Time.time - startPlayerInRange > aimingDuration)
                 {
-                    GetComponent<ShootingAbility>().Shoot();
-                    lastShot = Time.time;
+                    Vector3 raycastDirection = player.transform.position - transform.position;
+                    RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
+                    if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
+                    {
+                        GetComponent<ShootingAbility>().TryShootOnce();
+                        lastShot = Time.time;
+                    }
                 }
+                else if (!playerInRange)
+                {
+                    playerInRange = true;
+                    startPlayerInRange = Time.time;
+                }
+            }
+            else
+            {
+                playerInRange = false;
             }
         }
     }

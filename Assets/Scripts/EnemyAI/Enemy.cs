@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
-    public float moveSpeed = 3;
     public float attackSpeed = 10;
     public float xp = 10;
 
@@ -16,8 +15,6 @@ public class Enemy : Entity
     public float dodingRange = 1;
     public bool dodgingObstacle = false;
     public List<Vector3> dodgeObstaclePath;
-
-
     public void WalkToPlayer()
     {
         Vector3 raycastDirection = (player.transform.position - transform.position).normalized;

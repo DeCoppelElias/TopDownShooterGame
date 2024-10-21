@@ -20,16 +20,20 @@ public class SplitAbility : MonoBehaviour
             clone1.GetComponent<Entity>().maxHealth = currentMaxHealth / 2;
             clone1.GetComponent<Entity>().health = currentMaxHealth / 2;
             clone1.GetComponent<Entity>().damage = GetComponent<Entity>().damage / 2;
+            clone1.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;
             clone1.GetComponent<SplitMeleeEnemy>().splitAmount = currentSplitAmount + 1;
-            clone1.GetComponent<Rigidbody2D>().AddForce(throwDirection1 * 30000);
+            clone1.GetComponent<Rigidbody2D>().mass = rb.mass / 2f;
+            clone1.GetComponent<Rigidbody2D>().AddForce(throwDirection1 * rb.mass * 100);
 
             GameObject clone2 = Instantiate(this.gameObject, transform.position + throwDirection2 * (transform.localScale / 4).x, Quaternion.identity, transform.parent);
             clone2.transform.localScale = transform.localScale / 2;
             clone2.GetComponent<Entity>().maxHealth = GetComponent<Entity>().maxHealth / 2;
             clone2.GetComponent<Entity>().health = GetComponent<Entity>().maxHealth / 2;
             clone2.GetComponent<Entity>().damage = GetComponent<Entity>().damage / 2;
+            clone2.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;
             clone2.GetComponent<SplitMeleeEnemy>().splitAmount = currentSplitAmount + 1;
-            clone2.GetComponent<Rigidbody2D>().AddForce(throwDirection2 * 30000);
+            clone2.GetComponent<Rigidbody2D>().mass = rb.mass / 2f;
+            clone2.GetComponent<Rigidbody2D>().AddForce(throwDirection2 * rb.mass * 100);
         }
         Destroy(this.gameObject);
     }

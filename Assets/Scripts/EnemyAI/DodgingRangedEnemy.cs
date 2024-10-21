@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(DashAbility))]
 public class DodgingRangedEnemy : RangedEnemy
 {
-    public DashAbility.DashingState dashingState = DashAbility.DashingState.Ready;
-    public Vector3 dashDirection;
-    public float dashCooldown = 0;
-    private float lastUse;
+    private DashAbility dashAbility;
+
+    public override void StartEntity()
+    {
+        base.StartEntity();
+
+        dashAbility = GetComponent<DashAbility>();
+    }
 
     private void FixedUpdate()
     {
@@ -18,25 +23,16 @@ public class DodgingRangedEnemy : RangedEnemy
         Vector3 raycastDirection = player.transform.position - transform.position;
         RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
 
-        if (bulletTrigger && dashingState == DashAbility.DashingState.Ready && Time.time > lastUse + dashCooldown)
+        if (bulletTrigger)
         {
             int randomint = Random.Range(1, 4);
-            dashDirection = (Quaternion.Euler(0, 0, 90) * bulletDirection).normalized;
+            Vector3 dashDirection = (Quaternion.Euler(0, 0, 90) * bulletDirection).normalized;
             if (randomint == 1)
             {
                 dashDirection = (Quaternion.Euler(0, 0, -90) * bulletDirection).normalized;
             }
-            dashingState = GetComponent<DashAbility>().Dash(dashDirection);
+            dashAbility.Dash(dashDirection);
             bulletTrigger = false;
-            lastUse = Time.time;
-        }
-        else if(bulletTrigger && Time.time <= lastUse + dashCooldown)
-        {
-            bulletTrigger = false;
-        }
-        else if(dashingState == DashAbility.DashingState.Dashing || dashingState == DashAbility.DashingState.Charging)
-        {
-            dashingState = GetComponent<DashAbility>().Dash(dashDirection);
         }
         else if (Vector2.Distance(gameObject.transform.position, player.transform.position) > GetRange() || RaycastContainsWall(rays))
         {

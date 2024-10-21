@@ -6,11 +6,14 @@ public class ShootingAbility : MonoBehaviour
 {
     public GameObject bullets;
 
+    public float attackCooldown = 0.5f;
+    private float lastAttack;
+
     public float range = 1;
     public float pierce = 1;
     public float totalSplit = 1;
     public float totalFan = 1;
-    public float bulletSize = 0.5f;
+    public float bulletSize = 1;
     public float bulletSpeed = 6;
 
     public bool splitOnHit = false;
@@ -18,6 +21,11 @@ public class ShootingAbility : MonoBehaviour
     public float splitRange = 1;
     public float splitBulletSize = 0.5f;
     public float splitBulletSpeed = 6;
+    public float splitDamagePercentage = 0.5f;
+
+    public float shootingMoveSpeed = 2;
+
+    public bool shooting = false;
 
     public GameObject bulletPrefab;
     public Transform firePoint;
@@ -26,8 +34,30 @@ public class ShootingAbility : MonoBehaviour
     {
         bullets = GameObject.Find("Bullets");
     }
-    public void Shoot()
+
+    private void Update()
     {
+        if (shooting)
+        {
+            TryShootOnce();
+        }
+    }
+
+    public void StartShooting()
+    {
+        shooting = true;
+    }
+
+    public void StopShooting()
+    {
+        shooting = false;
+    }
+
+    public void TryShootOnce()
+    {
+        if (Time.time - lastAttack <= attackCooldown) return;
+        lastAttack = Time.time;
+
         float fan = totalFan;
         float split = totalSplit;
         float damage = GetComponent<Entity>().damage;
@@ -105,6 +135,7 @@ public class ShootingAbility : MonoBehaviour
         bullet.GetComponent<Bullet>().splitRange = splitRange;
         bullet.GetComponent<Bullet>().splitBulletSize = splitBulletSize;
         bullet.GetComponent<Bullet>().splitBulletSpeed = splitBulletSpeed;
+        bullet.GetComponent<Bullet>().splitDamagePercentage = splitDamagePercentage;
 
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
 

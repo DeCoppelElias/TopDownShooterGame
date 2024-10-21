@@ -16,6 +16,7 @@ public class Bullet : MonoBehaviour
     public float splitRange = 1;
     public float splitBulletSize = 0.5f;
     public float splitBulletSpeed = 6;
+    public float splitDamagePercentage = 0.5f;
 
     public string owner;
 
@@ -31,7 +32,7 @@ public class Bullet : MonoBehaviour
         if (owner == "Enemy" && collision.tag == "Player")
         {
             Player player = collision.GetComponent<Player>();
-            player.health -= damage;
+            player.TakeDamage(damage);
             pierce--;
             if (pierce == 0)
             {
@@ -41,7 +42,7 @@ public class Bullet : MonoBehaviour
         else if (owner == "Player" && collision.tag == "Enemy")
         {
             Enemy enemy = collision.GetComponent<Enemy>();
-            enemy.health -= damage;
+            enemy.TakeDamage(damage);
             pierce--;
             if (pierce == 0)
             {
@@ -80,7 +81,7 @@ public class Bullet : MonoBehaviour
             newBullet.GetComponent<Rigidbody2D>().AddForce(reflectVelocity, ForceMode2D.Impulse);
             Destroy(this.gameObject);
         }
-        else if (collision.tag != "Bullet" && collision.tag != "Enemy" && collision.tag != "ReflectShield")
+        else if (collision.tag == "Wall")
         {
             BulletHit();
         }
@@ -92,11 +93,9 @@ public class Bullet : MonoBehaviour
         {
             Split();
         }
-        gameObject.GetComponent<Animator>().SetBool("Hit", true);
+
         hit = true;
-        gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
-        Destroy(gameObject.GetComponent<BoxCollider2D>());
-        Destroy(gameObject, 1);
+        Destroy(gameObject);
     }
 
     public void BulletMiss()
@@ -124,7 +123,7 @@ public class Bullet : MonoBehaviour
         bullet.transform.localScale = new Vector3(splitBulletSize, splitBulletSize,1);
 
         bullet.GetComponent<Bullet>().pierce = 1;
-        bullet.GetComponent<Bullet>().damage = damage / splitAmount;
+        bullet.GetComponent<Bullet>().damage = damage * splitDamagePercentage;
         bullet.GetComponent<Bullet>().owner = owner;
         bullet.GetComponent<Bullet>().airTime = splitRange / splitBulletSpeed;
         bullet.GetComponent<Bullet>().createTime = Time.time;
@@ -143,12 +142,10 @@ public class Bullet : MonoBehaviour
         if (owner == "Player")
         {
             newBulletGameObject.GetComponent<Bullet>().owner = owner;
-            newBulletGameObject.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 255);
         }
         else
         {
             newBulletGameObject.GetComponent<Bullet>().owner = owner;
-            newBulletGameObject.GetComponent<SpriteRenderer>().color = new Color(0, 255, 255, 255);
         }
         return newBulletGameObject;
     }

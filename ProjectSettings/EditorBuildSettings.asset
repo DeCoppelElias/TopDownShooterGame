@@ -6,6 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 25d88ec6f9a4f8f419e589ae9d13ca24
+  - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  m_configObjects: {}
+  - enabled: 1
+    path: Assets/Scenes/PVP.unity
+    guid: 4f1fca9ca47e0874e803be04ef59dc2e
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 8620505a7b5bf294ea15774608c4708b, type: 2}

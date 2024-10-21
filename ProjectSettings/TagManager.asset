@@ -52,3 +52,6 @@ TagManager:
   - name: Entitiy
     uniqueID: 1934459445
     locked: 0
+  - name: Player
+    uniqueID: 3138839355
+    locked: 0

@@ -16,13 +16,13 @@ public class ReflectRangedEnemy : RangedEnemy
                 RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
                 if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
                 {
-                    GetComponent<ShootingAbility>().Shoot();
+                    GetComponent<ShootingAbility>().TryShootOnce();
                     lastShot = Time.time;
                 }
             }
             if (bulletTrigger && Time.time > lastUse + cooldown)
             {
-                GetComponent<ReflectShieldAbility>().CreateReflectShield();
+                GetComponent<ReflectShieldAbility>().EnableReflectShield();
                 lastUse = Time.time;
             }
             else if (bulletTrigger)

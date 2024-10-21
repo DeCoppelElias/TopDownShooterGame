@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class ReflectShield : MonoBehaviour
 {
-    public GameObject playerBullet;
-    public GameObject enemyBullet;
+    public Sprite playerBullet;
+    public Sprite enemyBullet;
     public enum ShieldType {Player,Enemy};
     public ShieldType shieldType;
 
@@ -23,10 +23,12 @@ public class ReflectShield : MonoBehaviour
                 if (shieldType == ShieldType.Player)
                 {
                     newBulletGameObject = collision.GetComponent<Bullet>().CreateCopy("Player");
+                    newBulletGameObject.GetComponent<SpriteRenderer>().sprite = playerBullet;
                 }
                 else
                 {
                     newBulletGameObject = collision.GetComponent<Bullet>().CreateCopy("Enemy");
+                    newBulletGameObject.GetComponent<SpriteRenderer>().sprite = enemyBullet;
                 }
                 newBulletGameObject.GetComponent<Bullet>().damage *= 2;
 
