@@ -6,8 +6,11 @@ public class ReflectMeleeEnemy : MeleeEnemy
 {
     public float cooldown = 5;
     public float lastUse = 0;
-    private void FixedUpdate()
+
+    public override void UpdateEntity()
     {
+        base.UpdateEntity();
+
         if (bulletTrigger && Time.time > lastUse + cooldown)
         {
             GetComponent<ReflectShieldAbility>().EnableReflectShield();

@@ -82,6 +82,8 @@ public class UIManager : MonoBehaviour
 
     public void EnablePauseUI()
     {
+        if (upgradeUI.activeSelf) return;
+
         gameStateManager.ToPaused();
         pauseUI.SetActive(true);
         SetFirstSelectedIfGamepad(pauseUI.transform.Find("ResumeButton").gameObject);
@@ -143,12 +145,13 @@ public class UIManager : MonoBehaviour
             text.text = currentPlayerClass.className;
 
             Image image = buttonTransform.Find("Sprite").GetComponent<Image>();
-            image.sprite = currentPlayerClass.sprite;
+            if (player.blue) image.sprite = currentPlayerClass.blueSprite;
+            else image.sprite = currentPlayerClass.redSprite;
 
             Button button = buttonTransform.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => { 
-                player.ApplyClass(currentPlayerClass);
+                player.ApplyClass(currentPlayerClass, player.blue);
                 DisableUpgradeUI();
             });
         }

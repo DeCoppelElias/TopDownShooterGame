@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: HeadShotClass
   m_EditorClassIdentifier: 
   className: Headshot Sniper
-  sprite: {fileID: 21300000, guid: ebe586905f7785e4e9dccc17ddb1b089, type: 3}
+  blueSprite: {fileID: 21300000, guid: ebe586905f7785e4e9dccc17ddb1b089, type: 3}
+  redSprite: {fileID: 21300000, guid: 21dc63bf0b3112c479eca6795d4eac0c, type: 3}
   maxHealth: 100
+  pvpMaxHealth: 200
   health: 100
   damage: 50
   normalMoveSpeed: 5

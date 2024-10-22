@@ -14,8 +14,11 @@ public class DodgingMeleeEnemy : MeleeEnemy
 
         dashAbility = GetComponent<DashAbility>();
     }
-    private void FixedUpdate()
+
+    public override void UpdateEntity()
     {
+        base.UpdateEntity();
+
         if (bulletTrigger)
         {
             int randomint = Random.Range(1, 4);

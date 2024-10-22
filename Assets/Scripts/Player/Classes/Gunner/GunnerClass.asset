@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: GunnerClass
   m_EditorClassIdentifier: 
   className: Gunner
-  sprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
+  blueSprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
+  redSprite: {fileID: 21300000, guid: 2a39200d95ca00149b5c46365b6311ed, type: 3}
   maxHealth: 100
+  pvpMaxHealth: 200
   health: 100
   damage: 10
   normalMoveSpeed: 5

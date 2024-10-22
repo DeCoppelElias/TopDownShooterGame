@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class MeleeEnemy : Enemy
 {
-    private void FixedUpdate()
+    public override void UpdateEntity()
     {
+        base.UpdateEntity();
+
         WalkToPlayer();
     }
 }

@@ -49,12 +49,12 @@ public class PlayerController : MonoBehaviour
 
     public void Shoot(InputAction.CallbackContext context)
     {
-        if (gameStateManager.IsPaused()) return;
-        if (!collectInput) return;
         if (shootAbility == null) return;
 
         if (context.performed)
         {
+            if (gameStateManager.IsPaused()) return;
+            if (!collectInput) return;
             shootAbility.StartShooting();
         }
 
@@ -86,13 +86,13 @@ public class PlayerController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        if (gameStateManager.IsPaused()) return;
-        if (!collectInput) return;
         if (playerMovement == null) return;
 
         Vector2 movementInput = Vector2.zero;
         if (context.performed)
         {
+            if (gameStateManager.IsPaused()) return;
+            if (!collectInput) return;
             movementInput = context.ReadValue<Vector2>();
         }
         else if (context.canceled)

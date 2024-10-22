@@ -21,6 +21,10 @@ public class Player : Entity
     public UnityEvent onHitEvent;
     public UnityEvent onDeath;
 
+    public bool isPVP = false;
+
+    public bool blue = true;
+
     public override void StartEntity()
     {
         shootingAbility = GetComponent<ShootingAbility>();
@@ -30,22 +34,33 @@ public class Player : Entity
         {
             playerClass = defaultPlayerClass;
         }
-        ApplyClass(playerClass);
+        ApplyClass(playerClass, blue);
     }
 
-    public void ApplyClass(Class playerClass)
+    public void ApplyClass(Class playerClass, bool blue)
     {
         this.playerClass = playerClass;
 
         SpriteRenderer renderer = this.GetComponentInChildren<SpriteRenderer>();
-        if (renderer != null) renderer.sprite = playerClass.sprite;
+        if (renderer != null)
+        {
+            if (blue) renderer.sprite = playerClass.blueSprite;
+            else renderer.sprite = playerClass.redSprite;
+        }
 
-        this.maxHealth = playerClass.maxHealth;
+        if (!isPVP) this.maxHealth = playerClass.maxHealth;
+        else this.maxHealth = playerClass.pvpMaxHealth;
+
+        Transform healthbar = this.transform.Find("EmptyHealthBar");
+        healthbar.localScale = new Vector3(1 + ((this.maxHealth - 100) / 500f), 1, 1);
+
+        this.health = this.maxHealth;
+
         this.damage = playerClass.damage;
 
         this.moveSpeed = playerClass.normalMoveSpeed;
 
-        this.invulnerableDuration = playerClass.invulnerableDuration;
+        if (!isPVP) this.invulnerableDuration = playerClass.invulnerableDuration;
 
         this.contactDamage = playerClass.contactDamage;
         this.contactHitCooldown = playerClass.contactHitCooldown;
@@ -96,6 +111,5 @@ public class Player : Entity
     public override void OnDeath()
     {
         onDeath.Invoke();
-        Destroy(this.gameObject);
     }
 }

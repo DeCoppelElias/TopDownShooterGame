@@ -104,15 +104,11 @@ public class WaveManager : MonoBehaviour
                         Room currentRoom = rooms[room];
                         Camera.main.transform.position = currentRoom.CameraLocation;
 
-                        //player.GetComponent<Player>().ClassUp();
-                        //player.GetComponent<Player>().maxHealth += 50;
-
                         player.transform.position = rooms[room].PlayerSpawnLocation;
                     }
                     else if(wave == 4)
                     {
                         uiManager.EnableUpgradeUI();
-                        player.GetComponent<Player>().health = player.GetComponent<Player>().maxHealth;
                     }
                     wave++;
                 }
@@ -178,7 +174,6 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
-        enemy.GetComponent<Enemy>().player = player;
         enemy.transform.SetParent(enemies.transform);
 
         warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), null);

@@ -14,8 +14,10 @@ public class ClassEditor : Editor
         // Draw default fields for general settings
         EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
         playerClass.className = EditorGUILayout.TextField("Class Name", playerClass.className);
-        playerClass.sprite = (Sprite)EditorGUILayout.ObjectField("Sprite", playerClass.sprite, typeof(Sprite), false);
+        playerClass.blueSprite = (Sprite)EditorGUILayout.ObjectField("Blue sprite", playerClass.blueSprite, typeof(Sprite), false);
+        playerClass.redSprite = (Sprite)EditorGUILayout.ObjectField("Red Sprite", playerClass.redSprite, typeof(Sprite), false);
         playerClass.maxHealth = EditorGUILayout.FloatField("Max Health", playerClass.maxHealth);
+        playerClass.pvpMaxHealth = EditorGUILayout.FloatField("PVP Max Health", playerClass.pvpMaxHealth);
         playerClass.health = EditorGUILayout.FloatField("Health", playerClass.health);
         playerClass.damage = EditorGUILayout.FloatField("Damage", playerClass.damage);
         playerClass.normalMoveSpeed = EditorGUILayout.FloatField("Normal Move Speed", playerClass.normalMoveSpeed);

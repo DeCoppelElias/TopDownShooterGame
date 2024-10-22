@@ -13,9 +13,12 @@ public class ChargingMeleeEnemy : Enemy
 
         dashAbility = GetComponent<DashAbility>();
     }
-    private void FixedUpdate()
+
+    public override void UpdateEntity()
     {
-        if(Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() / 2f)
+        base.UpdateEntity();
+
+        if (Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() / 2f)
         {
             Vector3 dashDirection = player.transform.position - transform.position;
             dashAbility.Dash(dashDirection);

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: BasicClass
   m_EditorClassIdentifier: 
   className: Basic
-  sprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
+  blueSprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
+  redSprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
   maxHealth: 100
+  pvpMaxHealth: 150
   health: 100
   damage: 10
   normalMoveSpeed: 5

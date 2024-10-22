@@ -14,8 +14,10 @@ public class DodgingRangedEnemy : RangedEnemy
         dashAbility = GetComponent<DashAbility>();
     }
 
-    private void FixedUpdate()
+    public override void UpdateEntity()
     {
+        base.UpdateEntity();
+
         Vector2 lookDir = player.transform.position - gameObject.transform.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
         gameObject.GetComponent<Rigidbody2D>().rotation = angle;

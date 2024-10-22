@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class PVPManager : MonoBehaviour
@@ -24,12 +26,40 @@ public class PVPManager : MonoBehaviour
     private Canvas sharedCanvas;
     private GameObject notificationUI;
     private Text notificationText;
+    private GameObject scoreUI;
+    private Text scoreText;
+    private GameObject debugUI;
+    private Text debugText;
 
     private GameStateManager gameStateManager;
 
-    private enum PVPState { Initialising, DeviceLost, PVP, CountDown, Done}
+    private bool deviceLost = false;
+
+    public GameObject upgradeButtonPrefab;
+
+    private enum PVPState { Initialising, PVP, CountDown, Upgrading, Done}
     [SerializeField]
     private PVPState pvpState = PVPState.Initialising;
+
+    private int currentRound = 1;
+    [SerializeField]
+    private int rounds = 2;
+    private bool upgradesBetweenRounds = true;
+
+    private float roundStart = 0;
+    private float roundDuration = 30;
+    private float lastSpawn = 0;
+    private float spawnCooldown = 20;
+    public List<GameObject> enemyPrefabs = new List<GameObject>();
+    public List<Vector3> spawnPositions = new List<Vector3>();
+    public int spawnAmount = 2;
+
+    private int player1Score = 0;
+    private int player2Score = 0;
+
+    public Tilemap warningTilemap;
+    public Tile warningTile;
+
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +84,10 @@ public class PVPManager : MonoBehaviour
         sharedCanvas = GameObject.Find("SharedCanvas").GetComponent<Canvas>();
         notificationUI = sharedCanvas.transform.Find("NotificationUI").gameObject;
         notificationText = notificationUI.transform.Find("Title").GetComponent<Text>();
+        scoreUI = sharedCanvas.transform.Find("ScoreUI").gameObject;
+        scoreText = scoreUI.transform.Find("Title").GetComponent<Text>();
+        debugUI = sharedCanvas.transform.Find("DebugUI").gameObject;
+        debugText = debugUI.transform.Find("Title").GetComponent<Text>();
 
         gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
 
@@ -73,9 +107,15 @@ public class PVPManager : MonoBehaviour
             }
             else if (change == InputDeviceChange.Removed)
             {
-                EnablePlayerMovement(false);
-                pvpState = PVPState.DeviceLost;
-                DisplayNotification("Gamepad disconnected! The game is paused!", -1);
+                deviceLost = true;
+
+                DisplayDebugMessage("Gamepad disconnected!", -1);
+
+                if (pvpState == PVPState.PVP || pvpState == PVPState.CountDown)
+                {
+                    EnablePlayerMovement(false);
+                    gameStateManager.ToPaused();
+                }
             }
         }
     }
@@ -83,47 +123,269 @@ public class PVPManager : MonoBehaviour
     private void Initialise()
     {
         pvpState = PVPState.Initialising;
-
         EnablePlayerMovement(false);
-
         DisplayNotification("Welcome to PVP, please plug in a controller in order to play together.", -1);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if ((pvpState == PVPState.Initialising || pvpState == PVPState.DeviceLost) && playerInput1.devices.Count > 0 && playerInput2.devices.Count > 0)
+        if (pvpState == PVPState.Initialising && playerInput1.devices.Count > 0 && playerInput2.devices.Count > 0)
         {
             if (pvpState == PVPState.Initialising)
             {
-                CountDownToStart(5, "The game will start in " + 5 + ".");
-            }
-            else if (pvpState == PVPState.DeviceLost)
-            {
-                CountDownToStart(4, "Gamepad reconnected! The game continues.");
+                StartRound();
             }
         }
+        else if (deviceLost && playerInput1.devices.Count > 0 && playerInput2.devices.Count > 0)
+        {
+            deviceLost = false;
+            DisplayDebugMessage("Gamepad reconnected!", 2);
+
+            if (pvpState == PVPState.PVP || pvpState == PVPState.CountDown)
+            {
+                EnablePlayerMovement(true);
+                gameStateManager.ToRunning();
+            }
+        }
+
+        if (pvpState == PVPState.PVP && Time.time - roundStart > roundDuration && Time.time - lastSpawn > spawnCooldown)
+        {
+            SpawnEnemies();
+        }
+    }
+
+    private void SpawnEnemies()
+    {
+        lastSpawn = Time.time;
+        DisplayNotification("Spawning Enemies!", 2);
+
+        List<Vector3> currentSpawnPositions = this.spawnPositions.OrderBy(x => UnityEngine.Random.Range(0, this.spawnPositions.Count)).Take(spawnAmount).ToList();
+        foreach (Vector3 position in currentSpawnPositions)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, this.enemyPrefabs.Count);
+            GameObject prefab = this.enemyPrefabs[randomIndex];
+            CreateEnemy(prefab, position);
+        }
+
+        if (spawnAmount < this.spawnPositions.Count)
+        {
+            spawnAmount += 1;
+        }
+        else if (spawnCooldown > 1)
+        {
+            spawnCooldown -= 1;
+        }
+    }
+
+    private void CreateEnemy(GameObject prefab, Vector3 spawnLocation)
+    {
+        warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), warningTile);
+        StartCoroutine(CreateEnemyAfterDelay(prefab, spawnLocation, 3));
+    }
+
+    private IEnumerator CreateEnemyAfterDelay(GameObject prefab, Vector3 spawnLocation, int delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
+        enemy.transform.SetParent(GameObject.Find("Enemies").transform);
+
+        warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), null);
     }
 
     public void PlayerDied(Player player)
     {
+        // Adding score from previous round
         if (player == player1)
         {
-            EnablePlayerMovement(false);
-            DisplayNotification("Player 2 won!", 4);
+            player2Score += 1;
         }
         else
         {
-            EnablePlayerMovement(false);
-            DisplayNotification("Player 1 won!", 4);
+            player1Score += 1;
+        }
+        scoreText.text = player1Score + " - " + player2Score;
+
+        if (currentRound == rounds)
+        {
+            EndPVP();
+        }
+        else
+        {
+            currentRound += 1;
+
+            if (upgradesBetweenRounds)
+            {
+                ResetArena();
+                UpgradePlayers();
+            }
+            else StartRound();
+        }
+    }
+
+    private void UpgradePlayers()
+    {
+        pvpState = PVPState.Upgrading;
+        DisplayNotification("Upgrade!", -1);
+
+        EnablePlayerMovement(false);
+
+        EnableUpgradeUI(player1);
+        EnableUpgradeUI(player2);
+    }
+
+    public void EnableUpgradeUI(Player player)
+    {
+        Class playerClass = player.playerClass;
+        if (playerClass.upgrades.Count == 0) return;
+
+        (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
+        Transform buttons = upgradeUI.transform.Find("Buttons");
+
+        // First make sure that the amount of buttons and upgrades are the same
+        if (buttons.childCount > playerClass.upgrades.Count)
+        {
+            for (int i = playerClass.upgrades.Count; i < buttons.childCount; i++)
+            {
+                GameObject child = buttons.GetChild(i).gameObject;
+                child.transform.SetParent(null);
+                if (child != null) Destroy(child);
+            }
+        }
+        else
+        {
+            for (int i = buttons.childCount; i < playerClass.upgrades.Count; i++)
+            {
+                Instantiate(upgradeButtonPrefab, buttons);
+            }
         }
 
+        // Link each button to upgrading the player to that class
+        for (int i = 0; i < buttons.childCount; i++)
+        {
+            Transform buttonTransform = buttons.GetChild(i);
+            Class currentPlayerClass = playerClass.upgrades[i];
+
+            Text text = buttonTransform.GetComponentInChildren<Text>();
+            text.text = currentPlayerClass.className;
+
+            Image image = buttonTransform.Find("Sprite").GetComponent<Image>();
+            if (player.blue) image.sprite = currentPlayerClass.blueSprite;
+            else image.sprite = currentPlayerClass.redSprite;
+
+            Button button = buttonTransform.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => {
+                player.ApplyClass(currentPlayerClass, player.blue);
+                DisableUpgradeUI(player);
+            });
+        }
+
+        upgradeUI.SetActive(true);
+
+        // Set first selected if gamepad
+        PlayerInput playerInput = player.GetComponent<PlayerInput>();
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            MultiplayerEventSystem multiplayerEventSystem = playerInput.uiInputModule.GetComponent<MultiplayerEventSystem>();
+            multiplayerEventSystem.SetSelectedGameObject(buttons.GetChild(0).gameObject);
+        }
+    }
+
+    public void DisableUpgradeUI(Player player)
+    {
+        (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
+        upgradeUI.SetActive(false);
+
+        PlayerInput playerInput = player.GetComponent<PlayerInput>();
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            MultiplayerEventSystem multiplayerEventSystem = playerInput.uiInputModule.GetComponent<MultiplayerEventSystem>();
+            multiplayerEventSystem.SetSelectedGameObject(null);
+        }
+
+        if (upgradeUI1.activeSelf == false && upgradeUI2.activeSelf == false) StartRound();
+    }
+
+    private void ResetArena()
+    {
+        // Reset player position
+        player1.transform.position = new Vector3(-5, 0, 0);
+        player2.transform.position = new Vector3(5, 0, 0);
+
+        // Reset player speed
+        player1.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        player2.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+
+        // Reset player health
+        player1.health = player1.maxHealth;
+        player2.health = player2.maxHealth;
+
+        // Clean up all enemies
+        Transform enemiesParent = GameObject.Find("Enemies").transform;
+        for (int i = 0; i < enemiesParent.childCount; i++)
+        {
+            GameObject enemy = enemiesParent.GetChild(i).gameObject;
+            enemy.transform.SetParent(null);
+            if (enemy != null) Destroy(enemy);
+        }
+
+        // Clean up all bullets
+        Transform bulletsParent = GameObject.Find("Bullets").transform;
+        for (int i = 0; i < bulletsParent.childCount; i++)
+        {
+            GameObject bullet = bulletsParent.GetChild(i).gameObject;
+            bullet.transform.SetParent(null);
+            if (bullet != null) Destroy(bullet);
+        }
+    }
+
+    private void StartRound()
+    {
+        EnablePlayerMovement(false);
+        ResetArena();
+        CountDownToAction(5, "Next round will start in ", () =>
+        {
+            DisplayNotification("Start!", 2);
+            pvpState = PVPState.PVP;
+            roundStart = Time.time;
+            EnablePlayerMovement(true);
+        });
+    }
+
+    private void EndPVP()
+    {
         pvpState = PVPState.Done;
+        EnablePlayerMovement(false);
+
+        ResetArena();
+
+        if (player1Score < player2Score)
+        {
+            player2.transform.position = new Vector3(0, 0, 0);
+            Destroy(player1.gameObject);
+            DisplayNotification("Player 2 won! Quitting to main menu...", 5);
+        }
+        else if (player1Score > player2Score)
+        {
+            player1.transform.position = new Vector3(0, 0, 0);
+            Destroy(player2.gameObject);
+            DisplayNotification("Player 1 won! Quitting to main menu...", 5);
+        }
+        else
+        {
+            player1.transform.position = new Vector3(-1, 0, 0);
+            player2.transform.position = new Vector3(1, 0, 0);
+            DisplayNotification("It's a tie! Quitting to main menu...", 5);
+        }
         StartCoroutine(PerformAfterDelay(() => this.gameStateManager.QuitToMainMenu(), 5));
     }
 
     public void EnablePauseUI(Player player)
     {
+        if (upgradeUI1.activeSelf || upgradeUI2.activeSelf) return;
+
         gameStateManager.ToPaused();
 
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
@@ -207,14 +469,23 @@ public class PVPManager : MonoBehaviour
         StartCoroutine(RemoveTextAfter(notificationText, removeAfter));
     }
 
-    private void CountDownToStart(int seconds, string initialMessage)
+    public void DisplayDebugMessage(string message, float removeAfter)
     {
-        pvpState = PVPState.CountDown;
-        DisplayNotification(initialMessage, -1);
-        StartCoroutine(CountDownToStartCoRoutine(seconds));
+        debugText.text = message;
+
+        if (removeAfter == -1) return;
+
+        StartCoroutine(RemoveTextAfter(debugText, removeAfter));
     }
 
-    private IEnumerator CountDownToStartCoRoutine(int seconds)
+    private void CountDownToAction(int seconds, string pretext, Action action)
+    {
+        pvpState = PVPState.CountDown;
+        DisplayNotification(pretext + seconds + ".", -1);
+        StartCoroutine(CountDownToActionCoroutine(seconds, pretext, action));
+    }
+
+    private IEnumerator CountDownToActionCoroutine(int seconds, string pretext, Action action)
     {
         yield return new WaitForSeconds(1);
 
@@ -223,14 +494,12 @@ public class PVPManager : MonoBehaviour
             seconds -= 1;
             if (seconds> 0)
             {
-                DisplayNotification("The game will start in " + (seconds) + ".", -1);
-                StartCoroutine(CountDownToStartCoRoutine(seconds));
+                DisplayNotification(pretext + seconds + ".", -1);
+                StartCoroutine(CountDownToActionCoroutine(seconds, pretext, action));
             }
             else
             {
-                DisplayNotification("Start!", 2);
-                pvpState = PVPState.PVP;
-                EnablePlayerMovement(true);
+                action();
             }
         }
     }

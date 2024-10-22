@@ -16,45 +16,47 @@ public class RangedEnemy : Enemy
         range = GetComponent<ShootingAbility>().range;
         enemySprite = transform.Find("EnemySprite").GetComponent<SpriteRenderer>();
     }
-    private void FixedUpdate()
+
+    private void LookAtPlayer()
     {
         Vector2 lookDir = (player.transform.position - gameObject.transform.position).normalized;
         enemySprite.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDir);
+    }
 
+    public override void UpdateEntity()
+    {
+        base.UpdateEntity();
+
+        LookAtPlayer();
+
+        // Walk to player
         Vector3 raycastDirection = player.transform.position - transform.position;
         RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
         if (Vector2.Distance(gameObject.transform.position, player.transform.position) > range || RaycastContainsWall(rays))
         {
             WalkToPlayer();
         }
-    }
 
-    public override void UpdateEntity()
-    {
-        if (Time.timeScale > 0)
+        // Shoot at player
+        else if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= range)
         {
-            if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= range)
+            if (playerInRange && Time.time - startPlayerInRange > aimingDuration)
             {
-                if (playerInRange && Time.time - startPlayerInRange > aimingDuration)
+                if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
                 {
-                    Vector3 raycastDirection = player.transform.position - transform.position;
-                    RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
-                    if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
-                    {
-                        GetComponent<ShootingAbility>().TryShootOnce();
-                        lastShot = Time.time;
-                    }
-                }
-                else if (!playerInRange)
-                {
-                    playerInRange = true;
-                    startPlayerInRange = Time.time;
+                    GetComponent<ShootingAbility>().TryShootOnce();
+                    lastShot = Time.time;
                 }
             }
-            else
+            else if (!playerInRange)
             {
-                playerInRange = false;
+                playerInRange = true;
+                startPlayerInRange = Time.time;
             }
+        }
+        else
+        {
+            playerInRange = false;
         }
     }
 

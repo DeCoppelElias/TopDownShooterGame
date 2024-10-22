@@ -8,6 +8,8 @@ public class ReflectRangedEnemy : RangedEnemy
     public float cooldown = 5;
     public override void UpdateEntity()
     {
+        base.UpdateEntity();
+
         if (Time.timeScale > 0)
         {
             if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= GetRange())
