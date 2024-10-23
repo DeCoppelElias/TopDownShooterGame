@@ -8,6 +8,7 @@ public class ShootingAbility : MonoBehaviour
 
     public float attackCooldown = 0.5f;
     private float lastAttack;
+    private float lastAttackRealTime;
 
     public float range = 1;
     public float pierce = 1;
@@ -26,6 +27,8 @@ public class ShootingAbility : MonoBehaviour
     public float shootingMoveSpeed = 2;
 
     public bool shooting = false;
+
+    public bool workWithRealTime = false;
 
     public GameObject bulletPrefab;
     public Transform firePoint;
@@ -55,8 +58,11 @@ public class ShootingAbility : MonoBehaviour
 
     public void TryShootOnce()
     {
-        if (Time.time - lastAttack <= attackCooldown) return;
+        if (!workWithRealTime && Time.time - lastAttack <= attackCooldown) return;
+        else if (workWithRealTime && Time.realtimeSinceStartup - lastAttackRealTime <= attackCooldown) return;
+
         lastAttack = Time.time;
+        lastAttackRealTime = Time.realtimeSinceStartup;
 
         float fan = totalFan;
         float split = totalSplit;

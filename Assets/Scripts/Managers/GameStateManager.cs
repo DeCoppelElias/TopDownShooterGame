@@ -15,10 +15,11 @@ public class GameStateManager : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    public void ToSlowmo()
+    public void ToSlowmo(float slow)
     {
         this.state = State.SLOWMO;
-        Time.timeScale = 0.5f;
+        Time.timeScale = slow;
+        Time.fixedDeltaTime = Time.timeScale * 0.02f;
     }
 
     public void ToRunning()
@@ -38,20 +39,16 @@ public class GameStateManager : MonoBehaviour
 
         // Clean up all enemies
         Transform enemiesParent = GameObject.Find("Enemies").transform;
-        for (int i = 0; i < enemiesParent.childCount; i++)
+        foreach (Transform child in enemiesParent)
         {
-            GameObject enemy = enemiesParent.GetChild(i).gameObject;
-            enemy.transform.SetParent(null);
-            if (enemy != null) Destroy(enemy);
+            Destroy(child.gameObject);
         }
 
         // Clean up all bullets
         Transform bulletsParent = GameObject.Find("Bullets").transform;
-        for (int i = 0; i < bulletsParent.childCount; i++)
+        foreach (Transform child in bulletsParent)
         {
-            GameObject bullet = bulletsParent.GetChild(i).gameObject;
-            bullet.transform.SetParent(null);
-            if (bullet != null) Destroy(bullet);
+            Destroy(child.gameObject);
         }
 
         SceneManager.LoadScene("MainMenu");

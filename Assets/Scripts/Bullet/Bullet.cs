@@ -18,6 +18,8 @@ public class Bullet : MonoBehaviour
     public float splitBulletSpeed = 6;
     public float splitDamagePercentage = 0.5f;
 
+    public bool reflected = false;
+
     public string owner;
 
     private void Update()
@@ -100,6 +102,7 @@ public class Bullet : MonoBehaviour
         GameObject newBulletGameObject = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
         newBulletGameObject.GetComponent<Bullet>().createTime = Time.time;
         newBulletGameObject.GetComponent<Bullet>().owner = owner;
+        newBulletGameObject.GetComponent<Bullet>().reflected = reflected;
 
         return newBulletGameObject;
     }

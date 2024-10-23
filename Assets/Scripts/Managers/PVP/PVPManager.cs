@@ -47,12 +47,15 @@ public class PVPManager : MonoBehaviour
     private bool upgradesBetweenRounds = true;
 
     private float roundStart = 0;
+    [SerializeField]
     private float roundDuration = 30;
     private float lastSpawn = 0;
     private float spawnCooldown = 20;
+    private float currentSpawnCooldown = 20;
+    private int spawnAmount = 2;
+    private int currentSpawnAmount = 2;
     public List<GameObject> enemyPrefabs = new List<GameObject>();
     public List<Vector3> spawnPositions = new List<Vector3>();
-    public int spawnAmount = 2;
 
     private int player1Score = 0;
     private int player2Score = 0;
@@ -149,7 +152,7 @@ public class PVPManager : MonoBehaviour
             }
         }
 
-        if (pvpState == PVPState.PVP && Time.time - roundStart > roundDuration && Time.time - lastSpawn > spawnCooldown)
+        if (pvpState == PVPState.PVP && Time.time - roundStart > roundDuration && Time.time - lastSpawn > currentSpawnCooldown)
         {
             SpawnEnemies();
         }
@@ -160,7 +163,7 @@ public class PVPManager : MonoBehaviour
         lastSpawn = Time.time;
         DisplayNotification("Spawning Enemies!", 2);
 
-        List<Vector3> currentSpawnPositions = this.spawnPositions.OrderBy(x => UnityEngine.Random.Range(0, this.spawnPositions.Count)).Take(spawnAmount).ToList();
+        List<Vector3> currentSpawnPositions = this.spawnPositions.OrderBy(x => UnityEngine.Random.Range(0, this.spawnPositions.Count)).Take(currentSpawnAmount).ToList();
         foreach (Vector3 position in currentSpawnPositions)
         {
             int randomIndex = UnityEngine.Random.Range(0, this.enemyPrefabs.Count);
@@ -168,13 +171,13 @@ public class PVPManager : MonoBehaviour
             CreateEnemy(prefab, position);
         }
 
-        if (spawnAmount < this.spawnPositions.Count)
+        if (currentSpawnAmount < this.spawnPositions.Count)
         {
-            spawnAmount += 1;
+            currentSpawnAmount += 1;
         }
-        else if (spawnCooldown > 1)
+        else if (currentSpawnCooldown > 1)
         {
-            spawnCooldown -= 1;
+            currentSpawnCooldown -= 1;
         }
     }
 
@@ -188,8 +191,11 @@ public class PVPManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
-        enemy.transform.SetParent(GameObject.Find("Enemies").transform);
+        if (pvpState == PVPState.PVP)
+        {
+            GameObject enemy = Instantiate(prefab, spawnLocation, Quaternion.identity);
+            enemy.transform.SetParent(GameObject.Find("Enemies").transform);
+        }
 
         warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), null);
     }
@@ -324,21 +330,21 @@ public class PVPManager : MonoBehaviour
 
         // Clean up all enemies
         Transform enemiesParent = GameObject.Find("Enemies").transform;
-        for (int i = 0; i < enemiesParent.childCount; i++)
+        foreach (Transform child in enemiesParent)
         {
-            GameObject enemy = enemiesParent.GetChild(i).gameObject;
-            enemy.transform.SetParent(null);
-            if (enemy != null) Destroy(enemy);
+            Destroy(child.gameObject);
         }
 
         // Clean up all bullets
         Transform bulletsParent = GameObject.Find("Bullets").transform;
-        for (int i = 0; i < bulletsParent.childCount; i++)
+        foreach (Transform child in bulletsParent)
         {
-            GameObject bullet = bulletsParent.GetChild(i).gameObject;
-            bullet.transform.SetParent(null);
-            if (bullet != null) Destroy(bullet);
+            Destroy(child.gameObject);
         }
+
+        // Reset enemy spawning parameters
+        this.currentSpawnCooldown = spawnCooldown;
+        this.currentSpawnAmount = spawnAmount;
     }
 
     private void StartRound()

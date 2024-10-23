@@ -21,10 +21,18 @@ public class ReflectShield : MonoBehaviour
                 newBulletGameObject = collision.GetComponent<Bullet>().CreateCopy(owner);
                 newBulletGameObject.GetComponent<SpriteRenderer>().sprite = bulletSprite;
 
-                newBulletGameObject.GetComponent<Bullet>().damage *= 2;
-
+                Bullet newBullet = newBulletGameObject.GetComponent<Bullet>();
                 Rigidbody2D rbNew = newBulletGameObject.GetComponent<Rigidbody2D>();
-                rbNew.AddForce(-rbOld.velocity*2, ForceMode2D.Impulse);
+                if (!oldBullet.reflected)
+                {
+                    newBullet.damage *= 2;
+                    rbNew.AddForce(-rbOld.velocity * 2, ForceMode2D.Impulse);
+                    newBullet.reflected = true;
+                }
+                else
+                {
+                    rbNew.AddForce(-rbOld.velocity, ForceMode2D.Impulse);
+                }
 
                 Destroy(collision.gameObject);
             }
