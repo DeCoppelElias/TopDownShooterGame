@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class Player : Entity
 {
@@ -25,10 +26,13 @@ public class Player : Entity
 
     public bool blue = true;
 
+    private PlayerController playerController;
+
     public override void StartEntity()
     {
         shootingAbility = GetComponent<ShootingAbility>();
         reflectShieldAbility = GetComponent<ReflectShieldAbility>();
+        playerController = GetComponent<PlayerController>();
 
         if (playerClass == null)
         {
@@ -64,6 +68,17 @@ public class Player : Entity
 
         this.contactDamage = playerClass.contactDamage;
         this.contactHitCooldown = playerClass.contactHitCooldown;
+
+        if (GetComponent<ClassAbility>() == null && playerClass.classAbilityScript != null)
+        {
+            System.Type scriptType = playerClass.classAbilityScript.GetClass();
+            if (typeof(ClassAbility).IsAssignableFrom(scriptType) && !scriptType.IsAbstract)
+            {
+                ClassAbility ability = (ClassAbility)this.gameObject.AddComponent(scriptType);
+
+                if (playerController) playerController.classAbility = ability.PerformAbility;
+            }
+        }
 
         if (shootingAbility != null)
         {

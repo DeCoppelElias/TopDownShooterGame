@@ -76,8 +76,7 @@ public class DashAbility : MonoBehaviour
         }
         else if (dashingState == DashingState.Dashing)
         {
-            rb.velocity = dashDirection * currentDashSpeed;
-            if (Time.time - dashStart > dashDuration)
+            if (Time.time - dashStart > dashDuration || rb.velocity == Vector2.zero)
             {
                 dashingState = DashingState.Cooldown;
                 lastDash = Time.time;
@@ -92,6 +91,10 @@ public class DashAbility : MonoBehaviour
                 {
                     entity.contactDamage /= contactDamageIncrease;
                 }
+            }
+            else
+            {
+                rb.velocity = dashDirection * currentDashSpeed;
             }
         }
     }

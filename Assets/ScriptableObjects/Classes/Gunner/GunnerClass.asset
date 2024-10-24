@@ -10,22 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d90e6b00709caa545b4c80a4910d9f6f, type: 3}
-  m_Name: BasicClass
+  m_Name: GunnerClass
   m_EditorClassIdentifier: 
-  className: Basic
-  blueSprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
-  redSprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
+  className: Gunner
+  blueSprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
+  redSprite: {fileID: 21300000, guid: 2a39200d95ca00149b5c46365b6311ed, type: 3}
   maxHealth: 100
-  pvpMaxHealth: 150
+  pvpMaxHealth: 200
   health: 100
   damage: 10
   normalMoveSpeed: 5
-  shootingMoveSpeed: 2
+  shootingMoveSpeed: 3
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
+  classAbilityScript: {fileID: 0}
   hasShootAbility: 1
-  attackCooldown: 0.4
+  attackCooldown: 0.25
   range: 5
   pierce: 1
   totalSplit: 1
@@ -39,11 +40,10 @@ MonoBehaviour:
   splitBulletSpeed: 6
   splitDamagePercentage: 0.5
   hasDashAbility: 1
-  dashCooldown: 2
+  dashCooldown: 5
   dashDuration: 0.1
   chargeDuration: 0
   dashSpeed: 20
   upgrades:
-  - {fileID: 11400000, guid: 555a668eeb86b7144976d519fee52921, type: 2}
-  - {fileID: 11400000, guid: 16149b7e752b71740a2081a340f62b49, type: 2}
-  - {fileID: 11400000, guid: 238a4ab7a18692a4c92fd042e3eca14b, type: 2}
+  - {fileID: 11400000, guid: 6daaba0aac80d374084f6a7e9ca145be, type: 2}
+  - {fileID: 11400000, guid: 7c7e16a673492bf44b43565c0343d24e, type: 2}

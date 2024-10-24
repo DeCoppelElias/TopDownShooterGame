@@ -530,11 +530,13 @@ public class PVPManager : MonoBehaviour
         {
             if (!enable) player1.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
             player1.GetComponent<PlayerController>().collectInput = enable;
+            player1.GetComponent<PlayerMovement>().SetMoveDirection(Vector3.zero);
         }
         if (player2 != null)
         {
             if (!enable) player2.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
             player2.GetComponent<PlayerController>().collectInput = enable;
+            player2.GetComponent<PlayerMovement>().SetMoveDirection(Vector3.zero);
         }
     }
 }

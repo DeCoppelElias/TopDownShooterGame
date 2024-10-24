@@ -293,6 +293,17 @@
                     "action": "ClassAbility",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2565e249-ce23-47ac-b6ed-e214dd5b7be5",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ClassAbility",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

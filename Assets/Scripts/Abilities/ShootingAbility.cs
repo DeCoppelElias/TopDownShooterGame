@@ -149,4 +149,9 @@ public class ShootingAbility : MonoBehaviour
 
         rb.AddForce(vector * bulletSpeed, ForceMode2D.Impulse);
     }
+
+    public void ShootBullet(float range, float bulletSpeed, float bulletSize, float pierce, float damage)
+    {
+        CreateBullet(range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, firePoint.position, 0);
+    }
 }

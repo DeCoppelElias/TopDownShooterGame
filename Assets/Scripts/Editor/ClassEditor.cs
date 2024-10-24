@@ -26,6 +26,8 @@ public class ClassEditor : Editor
         playerClass.contactDamage = EditorGUILayout.FloatField("Contact Damage", playerClass.contactDamage);
         playerClass.contactHitCooldown = EditorGUILayout.FloatField("Contact Hit Cooldown", playerClass.contactHitCooldown);
 
+        playerClass.classAbilityScript = (MonoScript)EditorGUILayout.ObjectField("Class Ability Script", playerClass.classAbilityScript, typeof(MonoScript), false);
+
         // Draw the Shootability section if the player class has the ability
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Shootability Variables", EditorStyles.boldLabel);

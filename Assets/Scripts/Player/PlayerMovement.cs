@@ -20,6 +20,12 @@ public class PlayerMovement : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
+    private bool knockback = false;
+    private Vector3 knockbackDirection;
+    private float knockbackSpeed = 10;
+    private float knockbackStart = 0;
+    private float knockbackDuration = 1;
+
     private void Start()
     {
         this.player = this.GetComponent<Player>();
@@ -46,17 +52,33 @@ public class PlayerMovement : MonoBehaviour
         // Don't move if dashing
         if (dashAbility != null && (dashAbility.dashingState == DashAbility.DashingState.Dashing || dashAbility.dashingState == DashAbility.DashingState.Charging)) return;
         
-        // Slow down if shooting
-        if (shootAbility != null && shootAbility.shooting)
+        // If knockback, move in knockback direction
+        if (knockback)
         {
-            this.currentMoveSpeed = shootAbility.shootingMoveSpeed;
+            if (Time.time - knockbackStart > knockbackDuration || playerRB.velocity == Vector2.zero)
+            {
+                knockback = false;
+                playerRB.velocity = Vector2.zero;
+            }
+            else
+            {
+                playerRB.velocity = knockbackDirection * knockbackSpeed;
+            }
         }
         else
         {
-            this.currentMoveSpeed = player.moveSpeed;
-        }
+            // Slow down if shooting
+            if (shootAbility != null && shootAbility.shooting)
+            {
+                this.currentMoveSpeed = shootAbility.shootingMoveSpeed;
+            }
+            else
+            {
+                this.currentMoveSpeed = player.moveSpeed;
+            }
 
-        playerRB.velocity = currentMoveDirection * currentMoveSpeed;
+            playerRB.velocity = currentMoveDirection * currentMoveSpeed;
+        }
     }
 
     public void Look()
@@ -82,5 +104,15 @@ public class PlayerMovement : MonoBehaviour
     public void SetLookInput(Vector3 lookInput)
     {
         this.currentLookInput = lookInput;
+    }
+
+    public void ApplyKnockBack(Vector3 knockbackDirection, float knockbackSpeed, float knockbackRange)
+    {
+        this.knockbackDirection = knockbackDirection;
+        this.knockbackSpeed = knockbackSpeed;
+        this.knockbackDuration = knockbackRange / knockbackSpeed;
+        this.knockbackStart = Time.time;
+        playerRB.velocity = knockbackDirection * knockbackSpeed;
+        this.knockback = true;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private GameStateManager gameStateManager;
 
     public bool collectInput = true;
+
+    public Action classAbility;
 
     private void Start()
     {
@@ -101,5 +104,14 @@ public class PlayerController : MonoBehaviour
         }
 
         playerMovement.SetMoveDirection(movementInput);
+    }
+
+    public void ClassAbility(InputAction.CallbackContext context)
+    {
+        if (gameStateManager.IsPaused()) return;
+        if (!collectInput) return;
+        if (classAbility == null) return;
+
+        classAbility();
     }
 }

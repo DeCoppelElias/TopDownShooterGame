@@ -50,14 +50,14 @@ public class WaveManager : MonoBehaviour
         int roomNumber = 0;
         foreach (Room room in rooms)
         {
-            Debug.Log("Camera location in room " + roomNumber + ": " + room.CameraLocation);
+            //Debug.Log("Camera location in room " + roomNumber + ": " + room.CameraLocation);
 
             string s = "";
             foreach (Vector3 spawnLoc in room.spawnLocations)
             {
                 s += spawnLoc.ToString();
             }
-            Debug.Log("Spawn locations in room " + roomNumber + ": " + s);
+            //Debug.Log("Spawn locations in room " + roomNumber + ": " + s);
 
             int waveNumber = 0;
             foreach (Wave wave in room.waves)
@@ -67,7 +67,7 @@ public class WaveManager : MonoBehaviour
                 {
                     s += enemy.ToString();
                 }
-                Debug.Log("Enemies in room " + roomNumber + " wave " + waveNumber + ": " + s);
+                //Debug.Log("Enemies in room " + roomNumber + " wave " + waveNumber + ": " + s);
 
                 waveNumber++;
             }
@@ -279,7 +279,7 @@ public class WaveManager : MonoBehaviour
                 index++;
             }
             newRoom.CameraLocation = new Vector3(float.Parse(s1), float.Parse(s2), float.Parse(s3));
-            Debug.Log(newRoom.CameraLocation);
+            //Debug.Log(newRoom.CameraLocation);
 
             //ex = 0,0,0&1,1,1|
             index++;

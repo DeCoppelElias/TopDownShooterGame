@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewPlayerClass", menuName = "Player/PlayerClass")]
@@ -22,6 +23,8 @@ public class Class : ScriptableObject
 
     public float contactDamage = 10;
     public float contactHitCooldown = 1f;
+
+    public MonoScript classAbilityScript;
 
     // Ranged Combat Settings
     public bool hasShootAbility = false;

@@ -24,6 +24,7 @@ MonoBehaviour:
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
+  classAbilityScript: {fileID: 11500000, guid: 6527fd63f58f3124f91aa4f705bf9d79, type: 3}
   hasShootAbility: 1
   attackCooldown: 0.6
   range: 10
@@ -39,7 +40,7 @@ MonoBehaviour:
   splitBulletSpeed: 6
   splitDamagePercentage: 0.5
   hasDashAbility: 1
-  dashCooldown: 2
+  dashCooldown: 5
   dashDuration: 0.1
   chargeDuration: 0
   dashSpeed: 20

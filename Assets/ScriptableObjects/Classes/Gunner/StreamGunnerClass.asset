@@ -10,25 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d90e6b00709caa545b4c80a4910d9f6f, type: 3}
-  m_Name: DoubleGunnerClass
+  m_Name: StreamGunnerClass
   m_EditorClassIdentifier: 
-  className: Double Gunner
+  className: Machine Gunner
   blueSprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
   redSprite: {fileID: 21300000, guid: 2a39200d95ca00149b5c46365b6311ed, type: 3}
   maxHealth: 100
   pvpMaxHealth: 200
   health: 100
-  damage: 10
+  damage: 7
   normalMoveSpeed: 5
   shootingMoveSpeed: 3
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
+  classAbilityScript: {fileID: 0}
   hasShootAbility: 1
-  attackCooldown: 0.25
+  attackCooldown: 0.1
   range: 5
   pierce: 1
-  totalSplit: 2
+  totalSplit: 1
   totalFan: 1
   bulletSize: 1
   bulletSpeed: 6
@@ -39,7 +40,7 @@ MonoBehaviour:
   splitBulletSpeed: 6
   splitDamagePercentage: 0.5
   hasDashAbility: 1
-  dashCooldown: 2
+  dashCooldown: 5
   dashDuration: 0.1
   chargeDuration: 0
   dashSpeed: 20

@@ -227,6 +227,8 @@ MonoBehaviour:
   onDeath:
     m_PersistentCalls:
       m_Calls: []
+  isPVP: 0
+  blue: 1
 --- !u!114 &6450769166791752440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,7 +270,7 @@ MonoBehaviour:
   enemyReflectShield: {fileID: 9205213379581261609, guid: 2432446cfb8d33641b3442a38d3924a6, type: 3}
   reflectShieldState: 0
   reflectShieldDuration: 2
-  reflectShieldCooldown: 3
+  reflectShieldCooldown: 8
   onPerformed:
     m_PersistentCalls:
       m_Calls: []
@@ -289,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dashingState: 0
-  dashCooldown: 2
+  dashCooldown: 5
   dashDuration: 0.1
   chargeDuration: 0
   dashSpeed: 20
@@ -328,6 +330,7 @@ MonoBehaviour:
   splitDamagePercentage: 0.5
   shootingMoveSpeed: 2
   shooting: 0
+  workWithRealTime: 0
   bulletPrefab: {fileID: 4050574258624113803, guid: ae862bf17e6f19043a7b1d777ddd48da, type: 3}
   firePoint: {fileID: 7383428955508614188}
 --- !u!50 &2952285022420082845
@@ -513,9 +516,25 @@ MonoBehaviour:
     m_ActionId: 6d5cbacb-5927-40b5-9831-a2c8cd6c959e
     m_ActionName: Player/Dash[/Mouse/leftButton,/XInputControllerWindows/rightTrigger,/Keyboard/leftShift,/XInputControllerWindows/leftTrigger]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6450769166791752440}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: ClassAbility
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 9e37e68d-af71-4e29-992f-dbe53de96f42
     m_ActionName: Player/Pause[/Keyboard/escape,/XInputControllerWindows/start]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: acc0bc59-cbb1-401e-8be1-c0751b0c7f29
+    m_ActionName: Player/ClassAbility[/Mouse/rightButton,/XInputControllerWindows/rightShoulder]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
