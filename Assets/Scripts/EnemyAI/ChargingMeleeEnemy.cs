@@ -18,12 +18,14 @@ public class ChargingMeleeEnemy : Enemy
     {
         base.UpdateEntity();
 
-        if (Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() / 2f)
+        Vector3 raycastDirection = player.transform.position - transform.position;
+        RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
+        if (Vector2.Distance(gameObject.transform.position, player.transform.position) < dashAbility.GetDashingDistance() / 2f && !RaycastContainsWall(rays) && dashAbility.dashingState == DashAbility.DashingState.Ready)
         {
             Vector3 dashDirection = player.transform.position - transform.position;
             dashAbility.Dash(dashDirection);
         }
-        else
+        else if (dashAbility.dashingState != DashAbility.DashingState.Charging && dashAbility.dashingState != DashAbility.DashingState.Dashing)
         {
             float step = moveSpeed * Time.deltaTime;
             transform.position = Vector2.MoveTowards(transform.position, player.transform.position, step);

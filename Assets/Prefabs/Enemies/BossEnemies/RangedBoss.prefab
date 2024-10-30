@@ -136,7 +136,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -214,7 +214,7 @@ SpriteRenderer:
   m_SortingLayerID: 1934459445
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cdccfe90ece2c8d44aa42c402e2bd87a, type: 3}
   m_Color: {r: 0, g: 1, b: 0.9441545, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -298,13 +298,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullets: {fileID: 0}
-  attackCooldown: 0.5
-  range: 5
+  attackCooldown: 2
+  range: 10
   pierce: 1
   totalSplit: 1
   totalFan: 1
   bulletSize: 2
-  bulletSpeed: 2
+  bulletSpeed: 3
   splitOnHit: 1
   splitAmount: 10
   splitRange: 3
@@ -313,8 +313,11 @@ MonoBehaviour:
   splitDamagePercentage: 0.5
   shootingMoveSpeed: 2
   shooting: 0
+  workWithRealTime: 0
   bulletPrefab: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}
   firePoint: {fileID: 1108159613198680592}
+  owner: {fileID: 0}
+  damage: 0
 --- !u!114 &9087488915836476857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -343,8 +346,8 @@ MonoBehaviour:
   playerReflectShield: {fileID: 4275745250244666332, guid: 53734d34131d8494d867a7fc2439dac7, type: 3}
   enemyReflectShield: {fileID: 9205213379581261609, guid: 2432446cfb8d33641b3442a38d3924a6, type: 3}
   reflectShieldState: 0
-  reflectShieldDuration: 0.2
-  reflectShieldCooldown: 3
+  reflectShieldDuration: 2
+  reflectShieldCooldown: 8
   onPerformed:
     m_PersistentCalls:
       m_Calls: []
@@ -364,25 +367,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 000344ec551f4ae4ab614e6393f44936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 400
-  health: 400
+  maxHealth: 600
+  health: 600
   damage: 25
-  moveSpeed: 4
+  moveSpeed: 2
   contactDamage: 10
   contactHitCooldown: 1
   lastValidPosition: {x: 0, y: 0, z: 0}
   outOfBounds: 0
-  attackSpeed: 0.5
-  xp: 10
+  score: 0
+  onDeathScore: 1000
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
-  lastShot: 0
-  lastUse: 0
-  cooldown: 8
+  player: {fileID: 0}
 --- !u!58 &5830200549234116787
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -396,9 +396,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0030617318, y: 0}
+  m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.21527417
+  m_Radius: 0.4
 --- !u!1001 &2282893969619620940
 PrefabInstance:
   m_ObjectHideFlags: 0

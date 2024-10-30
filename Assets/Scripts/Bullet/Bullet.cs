@@ -20,7 +20,7 @@ public class Bullet : MonoBehaviour
 
     public bool reflected = false;
 
-    public string owner;
+    public Entity owner;
 
     private void Update()
     {
@@ -38,9 +38,9 @@ public class Bullet : MonoBehaviour
         }
 
         Entity entity = collision.GetComponent<Entity>();
-        if (entity != null && owner != collision.name)
+        if (entity != null && owner.tag != collision.tag)
         {
-            entity.TakeDamage(damage);
+            entity.TakeDamage(damage, owner);
             pierce--;
             if (pierce == 0)
             {
@@ -97,7 +97,7 @@ public class Bullet : MonoBehaviour
         rb.AddForce(vector * splitBulletSpeed, ForceMode2D.Impulse);
     }
 
-    public GameObject CreateCopy(string owner)
+    public GameObject CreateCopy(Entity owner)
     {
         GameObject newBulletGameObject = Instantiate(gameObject, transform.position, Quaternion.identity, transform.parent);
         newBulletGameObject.GetComponent<Bullet>().createTime = Time.time;

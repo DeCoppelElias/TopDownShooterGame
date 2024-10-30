@@ -15,7 +15,7 @@ MonoBehaviour:
   className: Rocket Class
   blueSprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
   redSprite: {fileID: 21300000, guid: cdccfe90ece2c8d44aa42c402e2bd87a, type: 3}
-  maxHealth: 100
+  maxHealth: 250
   pvpMaxHealth: 200
   health: 100
   damage: 50
@@ -24,7 +24,7 @@ MonoBehaviour:
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
-  classAbilityScript: {fileID: 11500000, guid: 1517ad5bdff530f46b6faece8a8ad405, type: 3}
+  classAbility: {fileID: 11400000, guid: 37fc610b55d68244f9738c3b593e1a4e, type: 2}
   hasShootAbility: 1
   attackCooldown: 0.7
   range: 4

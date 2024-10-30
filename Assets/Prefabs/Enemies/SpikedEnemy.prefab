@@ -156,15 +156,16 @@ MonoBehaviour:
   health: 200
   damage: 10
   moveSpeed: 3
-  attackSpeed: 10
-  xp: 10
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  outOfBounds: 0
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
-  dashCooldown: 0
+  player: {fileID: 0}
 --- !u!114 &5001317743199309964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,9 +179,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dashingState: 0
-  dashDuration: 0.5
+  dashCooldown: 2
+  dashDuration: 1
   chargeDuration: 0.5
   dashSpeed: 6
+  contactDamageIncrease: 5
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-5368096059388804715
 MonoBehaviour:
   m_ObjectHideFlags: 0

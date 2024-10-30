@@ -155,14 +155,18 @@ MonoBehaviour:
   health: 100
   damage: 10
   moveSpeed: 2
-  attackSpeed: 10
-  xp: 10
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  outOfBounds: 0
+  score: 0
+  onDeathScore: 50
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
+  player: {fileID: 0}
 --- !u!114 &9127332484410889162
 MonoBehaviour:
   m_ObjectHideFlags: 0

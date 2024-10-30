@@ -15,7 +15,7 @@ MonoBehaviour:
   className: Double Gunner
   blueSprite: {fileID: 21300000, guid: 452c5045e6c034846a9bc0796d535129, type: 3}
   redSprite: {fileID: 21300000, guid: 2a39200d95ca00149b5c46365b6311ed, type: 3}
-  maxHealth: 100
+  maxHealth: 200
   pvpMaxHealth: 200
   health: 100
   damage: 10
@@ -24,7 +24,7 @@ MonoBehaviour:
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
-  classAbilityScript: {fileID: 0}
+  classAbility: {fileID: 11400000, guid: 9ff6813d0b305534382867123dedf548, type: 2}
   hasShootAbility: 1
   attackCooldown: 0.25
   range: 5

@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
     public bool collectInput = true;
 
-    public Action classAbility;
+    public Action<Player> classAbility;
 
     private void Start()
     {
@@ -112,6 +112,6 @@ public class PlayerController : MonoBehaviour
         if (!collectInput) return;
         if (classAbility == null) return;
 
-        classAbility();
+        classAbility(player);
     }
 }

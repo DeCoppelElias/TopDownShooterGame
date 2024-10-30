@@ -33,9 +33,20 @@ public class ShootingAbility : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform firePoint;
 
+    public Entity owner;
+
+    public float damage;
+
     private void Start()
     {
         bullets = GameObject.Find("Bullets");
+
+        Entity entity = GetComponent<Entity>();
+        if (entity != null)
+        {
+            owner = entity;
+            damage = entity.damage;
+        }
     }
 
     private void Update()
@@ -66,7 +77,6 @@ public class ShootingAbility : MonoBehaviour
 
         float fan = totalFan;
         float split = totalSplit;
-        float damage = GetComponent<Entity>().damage;
         if (fan % 2 == 1)
         {
             CreateBulletGroup(split, range / bulletSpeed, bulletSpeed, bulletSize, pierce, damage, 0);
@@ -132,7 +142,7 @@ public class ShootingAbility : MonoBehaviour
 
         bullet.GetComponent<Bullet>().pierce = pierce;
         bullet.GetComponent<Bullet>().damage = damage;
-        bullet.GetComponent<Bullet>().owner = gameObject.name;
+        bullet.GetComponent<Bullet>().owner = owner;
         bullet.GetComponent<Bullet>().airTime = airTime;
         bullet.GetComponent<Bullet>().createTime = Time.time;
 

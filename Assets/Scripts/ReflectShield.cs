@@ -5,14 +5,14 @@ using UnityEngine;
 public class ReflectShield : MonoBehaviour
 {
     public Sprite bulletSprite;
-    public string owner;
+    public Entity owner;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.GetComponent<Bullet>() && !collision.GetComponent<Bullet>().hit)
         {
             Bullet oldBullet = collision.GetComponent<Bullet>();
-            if (owner != oldBullet.owner)
+            if (owner.tag != oldBullet.owner.tag)
             {
                 Rigidbody2D rbOld = oldBullet.GetComponent<Rigidbody2D>();
 

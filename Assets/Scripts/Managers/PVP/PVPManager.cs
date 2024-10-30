@@ -105,13 +105,21 @@ public class PVPManager : MonoBehaviour
         {
             if (change == InputDeviceChange.Added)
             {
-                // Assign the newly connected gamepad to this player
-                playerInput2.SwitchCurrentControlScheme(device);
+                // Assign the newly connected gamepad to a player without a device
+                if (playerInput1.devices.Count == 0)
+                {
+                    DisplayDebugMessage("Gamepad connected to player 1!", 2);
+                    playerInput1.SwitchCurrentControlScheme(device);
+                }
+                else if (playerInput2.devices.Count == 0)
+                {
+                    DisplayDebugMessage("Gamepad connected to player 2!", 2);
+                    playerInput2.SwitchCurrentControlScheme(device);
+                }
             }
             else if (change == InputDeviceChange.Removed)
             {
                 deviceLost = true;
-
                 DisplayDebugMessage("Gamepad disconnected!", -1);
 
                 if (pvpState == PVPState.PVP || pvpState == PVPState.CountDown)

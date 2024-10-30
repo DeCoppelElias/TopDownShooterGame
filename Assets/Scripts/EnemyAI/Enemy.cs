@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
-    public float attackSpeed = 10;
-    public float xp = 10;
-
     public Vector3 bulletDirection;
     public bool bulletTrigger;
 
@@ -73,18 +70,18 @@ public class Enemy : Entity
         {
             if (dodgingObstacle)
             {
-                if (Vector3.Distance(transform.position, dodgeObstaclePath[0]) <= 0.71f)
+                if (dodgeObstaclePath.Count == 0)
+                {
+                    dodgingObstacle = false;
+                    transform.position = Vector2.MoveTowards(transform.position, player.transform.position, step);
+                }
+                else if (Vector3.Distance(transform.position, dodgeObstaclePath[0]) <= 0.71f)
                 {
                     dodgeObstaclePath.RemoveAt(0);
                 }
                 if (dodgeObstaclePath.Count > 0)
                 {
                     transform.position = Vector2.MoveTowards(transform.position, dodgeObstaclePath[0], step);
-                }
-                else if (dodgeObstaclePath.Count == 0)
-                {
-                    dodgingObstacle = false;
-                    transform.position = Vector2.MoveTowards(transform.position, player.transform.position, step);
                 }
             }
             else
@@ -95,7 +92,7 @@ public class Enemy : Entity
                     dodgingObstacle = true;
                     PathFinding pathFinder = GetComponent<PathFinding>();
                     dodgeObstaclePath = pathFinder.FindPathDepthFirstObstacle(transform.position, player.transform.position);
-                    transform.position = Vector2.MoveTowards(transform.position, dodgeObstaclePath[0], step);
+                    if (dodgeObstaclePath.Count > 0) transform.position = Vector2.MoveTowards(transform.position, dodgeObstaclePath[0], step);
                 }
                 else
                 {

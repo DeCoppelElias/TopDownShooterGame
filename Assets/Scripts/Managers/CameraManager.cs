@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,11 +25,11 @@ public class CameraManager : MonoBehaviour
 
     private void Update()
     {
-		if (shaking)
+		if (shaking && Time.timeScale > 0)
 		{
 			if (Time.time - shakeStart <= shakeDuration)
             {
-				Camera.main.transform.localPosition = originalPos + Random.insideUnitSphere * shakeAmount;
+				Camera.main.transform.localPosition = originalPos + UnityEngine.Random.insideUnitSphere * shakeAmount;
 			}
             else
             {

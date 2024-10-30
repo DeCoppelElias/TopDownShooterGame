@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
@@ -21,10 +22,17 @@ public class GameStateManager : MonoBehaviour
     private Volume volume;
     private ColorAdjustments colorAdjustments;
 
+    public UnityEvent<bool, float, bool, float> onWin;
+    public UnityEvent<bool, float> onLose;
+
+    private float startTime;
+
     private void Start()
     {
         this.volume = GameObject.Find("Global Volume").GetComponent<Volume>();
         this.volume.profile.TryGet<ColorAdjustments>(out colorAdjustments);
+
+        startTime = Time.time;
     }
 
     private void Update()
@@ -116,6 +124,28 @@ public class GameStateManager : MonoBehaviour
         return this.state == State.PAUSED;
     }
 
+    public void Restart()
+    {
+        ToRunning();
+
+        // Clean up all enemies
+        Transform enemiesParent = GameObject.Find("Enemies").transform;
+        foreach (Transform child in enemiesParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Clean up all bullets
+        Transform bulletsParent = GameObject.Find("Bullets").transform;
+        foreach (Transform child in bulletsParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
+    }
+
     public void QuitToMainMenu()
     {
         ToRunning();
@@ -135,5 +165,73 @@ public class GameStateManager : MonoBehaviour
         }
 
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void GameOver(Player player)
+    {
+        ToPaused();
+
+        bool beatHighScore = false;
+        float currentScore = player.score;
+        if (PlayerPrefs.HasKey("HighScore"))
+        {
+            float highScore = PlayerPrefs.GetFloat("HighScore");
+            if (currentScore > highScore)
+            {
+                beatHighScore = true;
+                PlayerPrefs.SetFloat("OldHighScore", highScore);
+                PlayerPrefs.SetFloat("HighScore", currentScore);
+            }
+        }
+        else
+        {
+            beatHighScore = true;
+            PlayerPrefs.SetFloat("HighScore", currentScore);
+        }
+
+        onLose.Invoke(beatHighScore, currentScore);
+    }
+
+    public void GameWon(Player player)
+    {
+        ToPaused();
+
+        bool beatBestTime = false;
+        float currentTime = Time.time - startTime;
+        if (PlayerPrefs.HasKey("BestTime"))
+        {
+            float bestTime = PlayerPrefs.GetFloat("BestTime");
+            if (currentTime < bestTime)
+            {
+                beatBestTime = true;
+                PlayerPrefs.SetFloat("OldBestTime", bestTime);
+                PlayerPrefs.SetFloat("BestTime", currentTime);
+            }
+        }
+        else
+        {
+            beatBestTime = true;
+            PlayerPrefs.SetFloat("BestTime", currentTime);
+        }
+
+        bool beatHighScore = false;
+        float currentScore = player.score;
+        if (PlayerPrefs.HasKey("HighScore"))
+        {
+            float highScore = PlayerPrefs.GetFloat("HighScore");
+            if (currentScore > highScore)
+            {
+                beatHighScore = true;
+                PlayerPrefs.SetFloat("OldHighScore", highScore);
+                PlayerPrefs.SetFloat("HighScore", currentScore);
+            }
+        }
+        else
+        {
+            beatHighScore = true;
+            PlayerPrefs.SetFloat("HighScore", currentScore);
+        }
+
+        onWin.Invoke(beatBestTime, currentTime, beatHighScore, currentScore);
     }
 }

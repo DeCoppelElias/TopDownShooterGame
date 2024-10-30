@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class PathFinding : MonoBehaviour
 {
-    public Tilemap walls;
+    private Tilemap walls;
     private HashSet<Vector3> visited;
 
     private void Start()
@@ -50,8 +50,10 @@ public class PathFinding : MonoBehaviour
         return result;
     }
 
-    private GridTile FindPathDepthFirstGridTile(GridTile from, Vector3 to)
+    private GridTile FindPathDepthFirstGridTile(GridTile from, Vector3 to, int counter=0)
     {
+        if (counter > 100) return null;
+
         List<Vector3> neighbours = GetNeighbours(from.location);
         List<GridTile> activeTiles = new List<GridTile>();
         foreach (Vector3 neighbour in neighbours)
@@ -70,7 +72,7 @@ public class PathFinding : MonoBehaviour
         activeTiles.Sort();
         foreach (GridTile gridTile in activeTiles)
         {
-            GridTile solution = FindPathDepthFirstGridTile(gridTile, to);
+            GridTile solution = FindPathDepthFirstGridTile(gridTile, to, counter+1);
             if (solution != null)
             {
                 return solution;
@@ -95,8 +97,10 @@ public class PathFinding : MonoBehaviour
         return result;
     }
 
-    private GridTile FindPathDepthFirstGridTileObstacle(GridTile from, Vector3 to)
+    private GridTile FindPathDepthFirstGridTileObstacle(GridTile from, Vector3 to, int counter = 0)
     {
+        if (counter > 100) return null;
+
         List<Vector3> neighbours = GetNeighbours(from.location);
         List<GridTile> activeTiles = new List<GridTile>();
         foreach (Vector3 neighbour in neighbours)
@@ -116,7 +120,7 @@ public class PathFinding : MonoBehaviour
             }
             else
             {
-                GridTile solution = FindPathDepthFirstGridTileObstacle(gridTile, to);
+                GridTile solution = FindPathDepthFirstGridTileObstacle(gridTile, to, counter+1);
                 if (solution != null)
                 {
                     return solution;

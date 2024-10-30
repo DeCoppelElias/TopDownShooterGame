@@ -102,7 +102,7 @@ SpriteRenderer:
   m_SortingLayerID: 1934459445
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cdccfe90ece2c8d44aa42c402e2bd87a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -186,19 +186,17 @@ MonoBehaviour:
   maxHealth: 200
   health: 200
   damage: 10
+  moveSpeed: 1
   contactDamage: 10
   contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
   outOfBounds: 0
-  moveSpeed: 1
-  attackSpeed: 0.5
-  xp: 10
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
-  lastShot: 0
+  player: {fileID: 0}
 --- !u!114 &-1174089322739075762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullets: {fileID: 0}
-  attackCooldown: 0.5
+  attackCooldown: 1
   range: 4
   pierce: 1
   totalSplit: 2
@@ -224,8 +222,13 @@ MonoBehaviour:
   splitRange: 1
   splitBulletSize: 0.5
   splitBulletSpeed: 6
+  splitDamagePercentage: 0.5
+  shootingMoveSpeed: 2
+  shooting: 0
+  workWithRealTime: 0
   bulletPrefab: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}
   firePoint: {fileID: 3760918493625542601}
+  damage: 0
 --- !u!114 &6248534592847706498
 MonoBehaviour:
   m_ObjectHideFlags: 0

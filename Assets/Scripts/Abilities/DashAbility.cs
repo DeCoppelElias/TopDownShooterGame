@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class DashAbility : MonoBehaviour
 {
     public enum DashingState { Ready, Charging, Dashing, Cooldown };
-    public DashingState dashingState;
+    public DashingState dashingState = DashingState.Ready;
 
     public int dashCooldown = 2;
     public float dashDuration = 0.1f;
@@ -65,6 +65,7 @@ public class DashAbility : MonoBehaviour
             {
                 dashingState = DashingState.Dashing;
                 currentDashSpeed = dashSpeed;
+                rb.velocity = dashDirection * currentDashSpeed;
                 dashStart = Time.time;
 
                 // Increase contact damage

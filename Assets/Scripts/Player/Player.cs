@@ -69,15 +69,11 @@ public class Player : Entity
         this.contactDamage = playerClass.contactDamage;
         this.contactHitCooldown = playerClass.contactHitCooldown;
 
-        if (GetComponent<ClassAbility>() == null && playerClass.classAbilityScript != null)
+        AbilityBehaviour abilityBehaviour = GetComponent<AbilityBehaviour>();
+        if (abilityBehaviour != null && playerClass.classAbility != null && playerController != null)
         {
-            System.Type scriptType = playerClass.classAbilityScript.GetClass();
-            if (typeof(ClassAbility).IsAssignableFrom(scriptType) && !scriptType.IsAbstract)
-            {
-                ClassAbility ability = (ClassAbility)this.gameObject.AddComponent(scriptType);
-
-                if (playerController) playerController.classAbility = ability.PerformAbility;
-            }
+            abilityBehaviour.LinkAbility(playerClass.classAbility);
+            playerController.classAbility = abilityBehaviour.UseAbility;
         }
 
         if (shootingAbility != null)
@@ -99,6 +95,8 @@ public class Player : Entity
             shootingAbility.splitDamagePercentage = playerClass.splitDamagePercentage;
 
             shootingAbility.shootingMoveSpeed = playerClass.shootingMoveSpeed;
+
+            shootingAbility.damage = damage;
         }
 
         DashAbility dashAbility = GetComponent<DashAbility>();
@@ -111,7 +109,7 @@ public class Player : Entity
         }
     }
 
-    public override void TakeDamage(float amount)
+    public override void TakeDamage(float amount, Entity source)
     {
         if (amount <= 0) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;
@@ -125,6 +123,7 @@ public class Player : Entity
 
     public override void OnDeath()
     {
+        this.health = 1;
         onDeath.Invoke();
     }
 }

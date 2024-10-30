@@ -28,7 +28,7 @@ public class WaveManager : MonoBehaviour
     public Tilemap warningTilemap;
     public Tile warningTile;
 
-    public enum WaveState {Fighting,Ready,Cooldown}
+    public enum WaveState {Fighting, Ready, Cooldown, Done}
     public WaveState waveState = WaveState.Cooldown;
     public int waveCooldown = 5;
     private float lastWaveTime = 0;
@@ -40,11 +40,14 @@ public class WaveManager : MonoBehaviour
     private float fightingStart = 0;
 
     private UIManager uiManager;
+    private GameStateManager gameStateManager;
 
     private void Start()
     {
         lastWaveTime = Time.time;
+
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
 
         GenerateRooms();
         int roomNumber = 0;
@@ -92,25 +95,32 @@ public class WaveManager : MonoBehaviour
             {
                 if(enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
                 {
-                    waveState = WaveState.Cooldown;
-
-                    uiManager.EnableWaveUI(waveCooldown);
-
-                    if (wave == 9)
+                    if (CheckGameDone())
                     {
-                        wave = -1;
-                        room++;
-
-                        Room currentRoom = rooms[room];
-                        Camera.main.transform.position = currentRoom.CameraLocation;
-
-                        player.transform.position = rooms[room].PlayerSpawnLocation;
+                        gameStateManager.GameWon(player.GetComponent<Player>());
+                        waveState = WaveState.Done;
                     }
-                    else if(wave == 4)
+                    else
                     {
-                        uiManager.EnableUpgradeUI();
+                        waveState = WaveState.Cooldown;
+                        uiManager.EnableWaveUI(waveCooldown);
+                        if (wave == 9)
+                        {
+                            wave = -1;
+                            room++;
+
+                            Room currentRoom = rooms[room];
+                            Camera.main.transform.position = currentRoom.CameraLocation;
+
+                            player.transform.position = rooms[room].PlayerSpawnLocation;
+                        }
+                        else if (wave == 4)
+                        {
+                            uiManager.EnableUpgradeUI();
+                        }
+
+                        wave++;
                     }
-                    wave++;
                 }
                 lastWaveTime = Time.time;
             }
@@ -125,31 +135,15 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    private Vector3 FindSpawnLocation()
+    public Vector3 GetSafePosition()
     {
-        if (room >= 0)
-        {
-            Room currentRoom = rooms[room];
-            List<Vector3> spawnLocations = currentRoom.spawnLocations;
-            int randomindex = Random.Range(0, spawnLocations.Count);
-            Vector3 resultLocation = spawnLocations[randomindex];
-            return new Vector3(resultLocation.x, resultLocation.y, 0);
-        }
+        return this.rooms[this.room].PlayerSpawnLocation;
+    }
 
-        // Random location
-        int random_x = Random.Range(7, 9);
-        int random_y = Random.Range(3, 5);
-        int random_xv = Random.Range(0, 2);
-        int random_yv = Random.Range(0, 2);
-        if (random_xv == 1)
-        {
-            random_x = -random_x;
-        }
-        if (random_yv == 1)
-        {
-            random_y = -random_y;
-        }
-        return new Vector3(random_x, random_y, 0);
+    private bool CheckGameDone()
+    {
+        if (room == rooms.Count - 1 && wave == 9) return true;
+        return false;
     }
 
     private List<Vector3> FindSpawnLocations(int amount)
@@ -399,5 +393,4 @@ public class WaveManager : MonoBehaviour
 
         return meleeEnemy;
     }
-    
 }

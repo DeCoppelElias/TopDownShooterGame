@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class RangedEnemy : Enemy
 {
-    public float lastShot = 0;
     private float range;
     private SpriteRenderer enemySprite;
 
@@ -13,6 +12,8 @@ public class RangedEnemy : Enemy
     private float aimingDuration = 0.5f;
     public override void StartEntity()
     {
+        base.StartEntity();
+
         range = GetComponent<ShootingAbility>().range;
         enemySprite = transform.Find("EnemySprite").GetComponent<SpriteRenderer>();
     }
@@ -42,10 +43,9 @@ public class RangedEnemy : Enemy
         {
             if (playerInRange && Time.time - startPlayerInRange > aimingDuration)
             {
-                if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
+                if (!RaycastContainsWall(rays))
                 {
                     GetComponent<ShootingAbility>().TryShootOnce();
-                    lastShot = Time.time;
                 }
             }
             else if (!playerInRange)

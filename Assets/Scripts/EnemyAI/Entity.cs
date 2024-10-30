@@ -29,6 +29,14 @@ public abstract class Entity : MonoBehaviour
     private float allowedOutOfBoundsDuration = 1f;
     private float outOfBoundsStart = 0;
 
+    private int outOfBoundsCounter = 0;
+
+    private Entity lastDamageSource;
+
+    public float score = 0;
+    [SerializeField]
+    private float onDeathScore = 100;
+
     private void Start()
     {
         walls = GameObject.Find("Walls").GetComponent<Tilemap>();
@@ -36,7 +44,7 @@ public abstract class Entity : MonoBehaviour
         emptyHealthBar = transform.Find("EmptyHealthBar");
         healthBar = emptyHealthBar.GetChild(0);
 
-        lastValidPosition = this.transform.position;
+        if (CheckOutOfBounds(this.transform.position)) lastValidPosition = this.transform.position;
 
         StartEntity();
     }
@@ -57,6 +65,9 @@ public abstract class Entity : MonoBehaviour
 
     public virtual void OnDeath()
     {
+        // Give on death score to last damage source
+        lastDamageSource.GiveScore(onDeathScore);
+
         Destroy(this.gameObject);
     }
 
@@ -70,11 +81,18 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float amount)
+    public virtual void TakeDamage(float amount, Entity source)
     {
         if (amount <= 0) return;
 
         this.health -= amount;
+
+        lastDamageSource = source;
+    }
+
+    public void GiveScore(float score)
+    {
+        this.score += score;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -82,22 +100,28 @@ public abstract class Entity : MonoBehaviour
         // An entity comes in contact with a player => player takes damage.
         // An enemy comes in contact with a player => enemy takes damage.
         // An enemy comes in contact with an other enemy => no damage is taken.
-        if (collision.transform.CompareTag("Player") || (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Player")))
-        {
-            if (Time.time - lastHit > contactHitCooldown)
-            {
-                lastHit = Time.time;
-                Entity entity = collision.transform.GetComponent<Entity>();
-                if (entity == null) throw new System.Exception("Collision has tag: " + collision.transform.tag + " but lacks Entity component.");
+        if (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Enemy")) return;
 
-                entity.TakeDamage(contactDamage);
-            }
+        Entity entity = collision.gameObject.GetComponent<Entity>();
+        if (entity != null && Time.time - lastHit > contactHitCooldown)
+        {
+            lastHit = Time.time;
+
+            entity.TakeDamage(contactDamage, this);
         }
+    }
+
+    public bool CheckOutOfBounds(Vector3 position)
+    {
+        if (walls.GetTile(Vector3Int.FloorToInt(this.transform.position)) != null) return true;
+        if (this.transform.position.x < -9.5f || this.transform.position.x > 9.5) return true;
+
+        return false;
     }
 
     public void EnforceValidPosition()
     {
-        if (walls.GetTile(Vector3Int.FloorToInt(this.transform.position)) != null)
+        if (CheckOutOfBounds(this.transform.position))
         {
             if (!outOfBounds)
             {
@@ -108,9 +132,24 @@ public abstract class Entity : MonoBehaviour
             {
                 if (Time.time - outOfBoundsStart > allowedOutOfBoundsDuration)
                 {
-                    this.transform.position = lastValidPosition;
+                    if (outOfBoundsCounter < 3)
+                    {
+                        this.transform.position = lastValidPosition;
+                        outOfBoundsCounter += 1;
+                    }
+                    else
+                    {
+                        Vector3 safePosition = new Vector3(0, 0, 0);
+                        GameObject waveManager = GameObject.Find("WaveManager");
+                        if (waveManager != null)
+                        {
+                            safePosition = waveManager.GetComponent<WaveManager>().GetSafePosition();
+                        }
+                        
+                        this.transform.position = safePosition;
+                        outOfBoundsCounter = 0;
+                    }
                     this.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
-
                     outOfBounds = false;
                 }
             }

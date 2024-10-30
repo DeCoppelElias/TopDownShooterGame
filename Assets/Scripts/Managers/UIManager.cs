@@ -22,9 +22,15 @@ public class UIManager : MonoBehaviour
     private bool dashAbilityEnabled = true;
     private GameObject reflectAbilityUI;
     private bool reflectAbilityEnabled = true;
+    private GameObject classAbilityUI;
+    private bool classAbilityEnabled = true;
+    private bool classAbilityInitialised = false;
 
     private GameObject waveUI;
     private Text waveCountdownText;
+
+    private GameObject gameOverUI;
+    private GameObject winUI;
 
     private EventSystem eventSystem;
     private PlayerInput playerInput;
@@ -50,10 +56,18 @@ public class UIManager : MonoBehaviour
         abilityUI = GameObject.Find("AbilityUI");
         dashAbilityUI = GameObject.Find("DashAbility");
         reflectAbilityUI = GameObject.Find("ReflectAbility");
+        classAbilityUI = GameObject.Find("ClassAbility");
+        if (!classAbilityInitialised) classAbilityUI.SetActive(false);
 
         waveUI = GameObject.Find("WaveUI");
         waveCountdownText = waveUI.transform.Find("Countdown").GetComponent<Text>();
         waveUI.SetActive(false);
+
+        gameOverUI = GameObject.Find("GameOverUI");
+        gameOverUI.SetActive(false);
+
+        winUI = GameObject.Find("WinUI");
+        winUI.SetActive(false);
 
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         playerInput = GameObject.Find("Player").GetComponent<PlayerInput>();
@@ -277,5 +291,114 @@ public class UIManager : MonoBehaviour
         {
             EventSystem.current.SetSelectedGameObject(null);
         }
+    }
+
+    public void SetClassAbilityUI(AbilityBehaviour abilityBehaviour)
+    {
+        if (classAbilityUI == null) classAbilityUI = GameObject.Find("ClassAbility");
+        classAbilityUI.SetActive(true);
+        classAbilityInitialised = true;
+    }
+
+    public void DisableClassAbility(AbilityBehaviour abilityBehaviour)
+    {
+        if (!classAbilityUI.activeSelf) return;
+        if (!classAbilityEnabled) return;
+        classAbilityEnabled = false;
+
+        int cooldown = abilityBehaviour.ability.cooldown;
+
+        Image image = classAbilityUI.GetComponent<Image>();
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.1f);
+
+        Text text = classAbilityUI.GetComponentInChildren<Text>();
+        text.text = cooldown.ToString();
+
+        StartCoroutine(ReduceCountEverySecond(text));
+    }
+
+    public void EnableClassAbility(AbilityBehaviour abilityBehaviour)
+    {
+        if (!classAbilityUI.activeSelf) return;
+        classAbilityEnabled = true;
+
+        Image image = classAbilityUI.GetComponent<Image>();
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 0.7f);
+
+        Text text = classAbilityUI.GetComponentInChildren<Text>();
+        text.text = "";
+    }
+    
+    public void EnableWinUI(bool beatBestTime, float bestTime, bool beatHighScore, float highScore)
+    {
+        this.winUI.SetActive(true);
+        GameObject timeGameObject = this.winUI.transform.Find("Scores").Find("Time").gameObject;
+        timeGameObject.SetActive(false);
+        GameObject scoreGameObject = this.winUI.transform.Find("Scores").Find("Score").gameObject;
+        scoreGameObject.SetActive(false);
+        GameObject newBestTimeGameObject = this.winUI.transform.Find("Scores").Find("NewBestTime").gameObject;
+        newBestTimeGameObject.SetActive(false);
+        GameObject newHighScoreGameObject = this.winUI.transform.Find("Scores").Find("NewHighScore").gameObject;
+        newHighScoreGameObject.SetActive(false);
+
+        StartCoroutine(PerformAfterRealDelay(1, () =>
+        {
+            timeGameObject.SetActive(true);
+
+            Text timeText = timeGameObject.GetComponent<Text>();
+            TimeSpan time = TimeSpan.FromSeconds(bestTime);
+            timeText.text = $"Time: {time:hh\\:mm\\:ss}";
+
+            if (beatBestTime)
+            {
+                newBestTimeGameObject.gameObject.SetActive(true);
+            }
+        }));
+
+        StartCoroutine(PerformAfterRealDelay(2, () =>
+        {
+            scoreGameObject.SetActive(true);
+
+            Text scoreText = scoreGameObject.GetComponent<Text>();
+            scoreText.text = $"Score: {highScore}";
+
+            if (beatHighScore)
+            {
+                newHighScoreGameObject.SetActive(true);
+            }
+        }));
+
+        SetFirstSelectedIfGamepad(winUI.GetComponentsInChildren<Button>()[0].gameObject);
+    }
+
+    public void EnableGameOverUI(bool beatHighScore, float highScore)
+    {
+        this.gameOverUI.SetActive(true);
+        GameObject scoreGameObject = this.gameOverUI.transform.Find("Scores").Find("Score").gameObject;
+        scoreGameObject.SetActive(false);
+        GameObject newHighScoreGameObject = this.gameOverUI.transform.Find("Scores").Find("NewHighScore").gameObject;
+        newHighScoreGameObject.SetActive(false);
+
+        StartCoroutine(PerformAfterRealDelay(1, () =>
+        {
+            scoreGameObject.SetActive(true);
+
+            Text scoreText = scoreGameObject.GetComponent<Text>();
+            scoreText.text = $"Score: {highScore}";
+
+            if (beatHighScore)
+            {
+                newHighScoreGameObject.SetActive(true);
+            }
+        }));
+
+        SetFirstSelectedIfGamepad(winUI.GetComponentsInChildren<Button>()[0].gameObject);
+    }
+    
+    private IEnumerator PerformAfterRealDelay(float delay, Action action)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+
+        action();
     }
 }

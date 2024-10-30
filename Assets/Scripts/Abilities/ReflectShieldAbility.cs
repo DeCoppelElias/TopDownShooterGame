@@ -37,7 +37,8 @@ public class ReflectShieldAbility : MonoBehaviour
         currentShield.transform.localScale = new Vector3(1, 1, 1);
 
         currentShield.GetComponent<ReflectShield>().bulletSprite = relfectingBulletSprite;
-        currentShield.GetComponent<ReflectShield>().owner = this.gameObject.name;
+        currentShield.GetComponent<ReflectShield>().owner = GetComponent<Entity>();
+        Debug.Log(GetComponent<Entity>());
 
         currentShield.SetActive(false);
     }

@@ -134,14 +134,18 @@ MonoBehaviour:
   health: 25
   damage: 10
   moveSpeed: 3.5
-  attackSpeed: 10
-  xp: 10
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  outOfBounds: 0
+  score: 0
+  onDeathScore: 50
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
+  player: {fileID: 0}
 --- !u!50 &1129325351206503047
 Rigidbody2D:
   serializedVersion: 4

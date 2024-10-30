@@ -15,7 +15,7 @@ MonoBehaviour:
   className: Sniper
   blueSprite: {fileID: 21300000, guid: ebe586905f7785e4e9dccc17ddb1b089, type: 3}
   redSprite: {fileID: 21300000, guid: 21dc63bf0b3112c479eca6795d4eac0c, type: 3}
-  maxHealth: 100
+  maxHealth: 150
   pvpMaxHealth: 200
   health: 100
   damage: 20
@@ -24,7 +24,7 @@ MonoBehaviour:
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
-  classAbilityScript: {fileID: 11500000, guid: 6527fd63f58f3124f91aa4f705bf9d79, type: 3}
+  classAbility: {fileID: 11400000, guid: 61bddf103a14e5e4facd2aa9af54cbb1, type: 2}
   hasShootAbility: 1
   attackCooldown: 0.6
   range: 10

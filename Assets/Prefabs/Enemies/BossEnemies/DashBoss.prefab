@@ -112,7 +112,7 @@ Transform:
   m_GameObject: {fileID: 6431907754560271758}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 2840272673596991017}
   - {fileID: 5876297018407923699}
@@ -152,19 +152,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a891cea6f7405441b4a9f627abc7498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 300
-  health: 300
+  maxHealth: 400
+  health: 400
   damage: 20
   moveSpeed: 3
-  attackSpeed: 10
-  xp: 30
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  outOfBounds: 0
+  score: 0
+  onDeathScore: 1000
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
-  dashCooldown: 0
+  player: {fileID: 0}
 --- !u!114 &-4507895737508089046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,9 +181,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dashingState: 0
-  dashDuration: 0.5
+  dashCooldown: 4
+  dashDuration: 1
   chargeDuration: 0.5
-  dashSpeed: 6
+  dashSpeed: 5
+  contactDamageIncrease: 2
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-2866914268876374352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,9 +218,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.003707528, y: 0}
   serializedVersion: 2
-  m_Radius: 0.20974354
+  m_Radius: 0.41365469
 --- !u!1001 &6880396768053390786
 PrefabInstance:
   m_ObjectHideFlags: 0

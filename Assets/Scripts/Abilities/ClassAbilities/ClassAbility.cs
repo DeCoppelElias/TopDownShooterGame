@@ -1,21 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static UnityEngine.InputSystem.InputAction;
+﻿using UnityEngine;
 
-public abstract class ClassAbility : MonoBehaviour
+public abstract class ClassAbility : ScriptableObject
 {
-    [SerializeField]
-    private float cooldown = 2;
-    private float lastUse = 0;
-
-    public void PerformAbility()
-    {
-        if (Time.time - lastUse > cooldown)
-        {
-            lastUse = Time.time;
-            PerformAbilitySpecific();
-        }
-    }
-    protected abstract void PerformAbilitySpecific();
+    public int cooldown = 2;
+    public abstract bool Initialise(Player player);
+    public abstract void PerformAbility(Player player);
 }

@@ -2,35 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(ReflectShieldAbility))]
 public class ReflectRangedEnemy : RangedEnemy
 {
-    public float lastUse = 0;
-    public float cooldown = 5;
+    private ReflectShieldAbility reflectShieldAbility; 
+    public override void StartEntity()
+    {
+        base.StartEntity();
+
+        reflectShieldAbility = GetComponent<ReflectShieldAbility>();
+    }
     public override void UpdateEntity()
     {
         base.UpdateEntity();
 
-        if (Time.timeScale > 0)
+        if (bulletTrigger) reflectShieldAbility.EnableReflectShield();
+        else if (bulletTrigger)
         {
-            if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= GetRange())
-            {
-                Vector3 raycastDirection = player.transform.position - transform.position;
-                RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
-                if (!RaycastContainsWall(rays) && Time.time - lastShot > 1 / attackSpeed)
-                {
-                    GetComponent<ShootingAbility>().TryShootOnce();
-                    lastShot = Time.time;
-                }
-            }
-            if (bulletTrigger && Time.time > lastUse + cooldown)
-            {
-                GetComponent<ReflectShieldAbility>().EnableReflectShield();
-                lastUse = Time.time;
-            }
-            else if (bulletTrigger)
-            {
-                bulletTrigger = false;
-            }
+            bulletTrigger = false;
         }
     }
 }

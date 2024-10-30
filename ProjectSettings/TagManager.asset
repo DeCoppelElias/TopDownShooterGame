@@ -12,6 +12,7 @@ TagManager:
   - ReflectShield
   - Wall
   - ReflectWall
+  - Player2
   layers:
   - Default
   - TransparentFX
