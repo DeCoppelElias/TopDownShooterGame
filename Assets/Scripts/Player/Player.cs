@@ -123,6 +123,7 @@ public class Player : Entity
 
     public override void OnDeath()
     {
+        audioManager.PlayDieSound();
         this.health = 1;
         onDeath.Invoke();
     }

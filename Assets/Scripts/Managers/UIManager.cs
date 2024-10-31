@@ -98,6 +98,8 @@ public class UIManager : MonoBehaviour
     {
         if (upgradeUI.activeSelf) return;
 
+        LowerMusicVolume();
+
         gameStateManager.ToPaused();
         pauseUI.SetActive(true);
         SetFirstSelectedIfGamepad(pauseUI.transform.Find("ResumeButton").gameObject);
@@ -105,6 +107,8 @@ public class UIManager : MonoBehaviour
 
     public void DisablePauseUI()
     {
+        ReturnMusicVolume();
+
         gameStateManager.ToRunning();
         pauseUI.SetActive(false);
         RemoveFirstSelected();
@@ -124,6 +128,8 @@ public class UIManager : MonoBehaviour
 
     public void EnableUpgradeUI()
     {
+        LowerMusicVolume();
+
         Class playerClass = player.playerClass;
         if (playerClass.upgrades.Count == 0) return;
 
@@ -176,6 +182,8 @@ public class UIManager : MonoBehaviour
 
     public void DisableUpgradeUI()
     {
+        ReturnMusicVolume();
+
         gameStateManager.ToRunning();
         upgradeUI.SetActive(false);
         RemoveFirstSelected();
@@ -331,6 +339,8 @@ public class UIManager : MonoBehaviour
     
     public void EnableWinUI(bool beatBestTime, float bestTime, bool beatHighScore, float highScore)
     {
+        LowerMusicVolume();
+
         this.winUI.SetActive(true);
         GameObject timeGameObject = this.winUI.transform.Find("Scores").Find("Time").gameObject;
         timeGameObject.SetActive(false);
@@ -373,6 +383,8 @@ public class UIManager : MonoBehaviour
 
     public void EnableGameOverUI(bool beatHighScore, float highScore)
     {
+        LowerMusicVolume();
+
         this.gameOverUI.SetActive(true);
         GameObject scoreGameObject = this.gameOverUI.transform.Find("Scores").Find("Score").gameObject;
         scoreGameObject.SetActive(false);
@@ -400,5 +412,15 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(delay);
 
         action();
+    }
+
+    private void LowerMusicVolume()
+    {
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 0.4f;
+    }
+
+    private void ReturnMusicVolume()
+    {
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 1;
     }
 }

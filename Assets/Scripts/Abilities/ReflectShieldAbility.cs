@@ -38,7 +38,6 @@ public class ReflectShieldAbility : MonoBehaviour
 
         currentShield.GetComponent<ReflectShield>().bulletSprite = relfectingBulletSprite;
         currentShield.GetComponent<ReflectShield>().owner = GetComponent<Entity>();
-        Debug.Log(GetComponent<Entity>());
 
         currentShield.SetActive(false);
     }

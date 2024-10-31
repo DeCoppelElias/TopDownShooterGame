@@ -46,6 +46,9 @@ public class MainMenuManager : MonoBehaviour
         {
             highScoreUI.SetActive(false);
         }
+
+        // Play music
+        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlayMainMenuMusic();
     }
 
     private void Update()

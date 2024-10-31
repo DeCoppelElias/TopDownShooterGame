@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ShootingAbility : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class ShootingAbility : MonoBehaviour
     public Entity owner;
 
     public float damage;
+
+    public UnityEvent onShoot;
 
     private void Start()
     {
@@ -99,6 +102,8 @@ public class ShootingAbility : MonoBehaviour
                 fan--;
             }
         }
+
+        if (onShoot != null) onShoot.Invoke();
     }
     public void CreateBulletGroup(float split, float airTime, float bulletSpeed, float bulletSize, float pierce, float damage, float rotation)
     {

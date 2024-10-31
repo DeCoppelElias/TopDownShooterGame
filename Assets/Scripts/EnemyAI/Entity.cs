@@ -37,9 +37,12 @@ public abstract class Entity : MonoBehaviour
     [SerializeField]
     private float onDeathScore = 100;
 
+    protected AudioManager audioManager;
+
     private void Start()
     {
         walls = GameObject.Find("Walls").GetComponent<Tilemap>();
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 
         emptyHealthBar = transform.Find("EmptyHealthBar");
         healthBar = emptyHealthBar.GetChild(0);
@@ -67,6 +70,9 @@ public abstract class Entity : MonoBehaviour
     {
         // Give on death score to last damage source
         lastDamageSource.GiveScore(onDeathScore);
+
+        // Play death sound
+        audioManager.PlayDieSound();
 
         Destroy(this.gameObject);
     }
