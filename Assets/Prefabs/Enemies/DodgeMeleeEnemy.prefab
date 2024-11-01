@@ -156,17 +156,21 @@ MonoBehaviour:
   maxHealth: 100
   health: 100
   damage: 10
-  moveSpeed: 2
-  attackSpeed: 10
-  xp: 10
+  moveSpeed: 1
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
+  score: 0
+  onDeathScore: 100
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
-  player: {fileID: 0}
   dodingRange: 1
   dodgingObstacle: 0
   dodgeObstaclePath: []
-  dashDirection: {x: 0, y: 0, z: 0}
-  dashCooldown: 1.5
+  player: {fileID: 0}
 --- !u!114 &1016313418591776582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,9 +184,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dashingState: 0
-  dashDuration: 0.3
+  dashCooldown: 2
+  dashDuration: 0.1
   chargeDuration: 0
-  dashSpeed: 6
+  dashSpeed: 8
+  contactDamageIncrease: 1
+  onPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReady:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &-2557078845482434257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,7 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
 --- !u!58 &2661872802162995546
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -318,7 +329,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

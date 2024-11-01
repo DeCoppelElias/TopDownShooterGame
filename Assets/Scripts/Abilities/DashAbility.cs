@@ -104,24 +104,4 @@ public class DashAbility : MonoBehaviour
     {
         return dashSpeed * dashDuration;
     }
-
-
-    /// <summary>
-    /// While dashing, player will bounce of walls slightly.
-    /// </summary>
-    /// <param name="collision"></param>
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (dashingState == DashingState.Dashing && collision.transform.CompareTag("Wall"))
-        {
-            // Get the collision normal (the direction opposite to the surface hit)
-            Vector2 collisionNormal = collision.contacts[0].normal;
-
-            // Reflect the dash direction using the collision normal
-            dashDirection = Vector2.Reflect(dashDirection, collisionNormal).normalized;
-
-            // Reduce dashing speed to simulate loss of force.
-            currentDashSpeed /= 4f;
-        }
-    }
 }

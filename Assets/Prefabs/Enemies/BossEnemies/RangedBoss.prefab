@@ -302,7 +302,7 @@ MonoBehaviour:
   range: 10
   pierce: 1
   totalSplit: 1
-  totalFan: 1
+  totalFan: 3
   bulletSize: 2
   bulletSpeed: 3
   splitOnHit: 1
@@ -318,6 +318,9 @@ MonoBehaviour:
   firePoint: {fileID: 1108159613198680592}
   owner: {fileID: 0}
   damage: 0
+  onShoot:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &9087488915836476857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,7 +333,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
 --- !u!114 &3942658835709379017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,8 +369,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 000344ec551f4ae4ab614e6393f44936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 600
-  health: 600
+  maxHealth: 1000
+  health: 1000
   damage: 25
   moveSpeed: 2
   contactDamage: 10

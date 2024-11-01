@@ -38,7 +38,7 @@ public class Bullet : MonoBehaviour
         }
 
         Entity entity = collision.GetComponent<Entity>();
-        if (entity != null && owner.tag != collision.tag)
+        if (entity != null && owner != null && owner.tag != collision.tag)
         {
             entity.TakeDamage(damage, owner);
             pierce--;

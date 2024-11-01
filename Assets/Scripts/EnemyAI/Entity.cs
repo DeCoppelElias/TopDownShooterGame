@@ -21,11 +21,13 @@ public abstract class Entity : MonoBehaviour
     private Tilemap walls;
 
     public Vector3 lastValidPosition;
+    [SerializeField]
     private float updateValidPositionCooldown = 2f;
     private float lastValidPositionUpdate = 0;
 
     [SerializeField]
     private bool outOfBounds = false;
+    [SerializeField]
     private float allowedOutOfBoundsDuration = 1f;
     private float outOfBoundsStart = 0;
 

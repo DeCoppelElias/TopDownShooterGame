@@ -159,7 +159,11 @@ MonoBehaviour:
   contactDamage: 10
   contactHitCooldown: 1
   lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
   outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
+  score: 0
+  onDeathScore: 100
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
   dodingRange: 1
@@ -180,10 +184,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashingState: 0
   dashCooldown: 2
-  dashDuration: 1
+  dashDuration: 0.3
   chargeDuration: 0.5
-  dashSpeed: 6
-  contactDamageIncrease: 5
+  dashSpeed: 8
+  contactDamageIncrease: 2
   onPerformed:
     m_PersistentCalls:
       m_Calls: []
@@ -202,7 +206,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
 --- !u!58 &1929318733477689842
 CircleCollider2D:
   m_ObjectHideFlags: 0

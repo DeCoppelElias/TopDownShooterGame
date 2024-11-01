@@ -400,6 +400,8 @@ public class PVPManager : MonoBehaviour
     {
         if (upgradeUI1.activeSelf || upgradeUI2.activeSelf) return;
 
+        LowerMusicVolume();
+
         gameStateManager.ToPaused();
 
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
@@ -420,6 +422,8 @@ public class PVPManager : MonoBehaviour
 
     public void DisablePauseUI(Player player)
     {
+        ReturnMusicVolume();
+
         (GameObject pauseUI, GameObject upgradeUI) = GetUI(player);
         pauseUI.SetActive(false);
         gameStateManager.ToRunning();
@@ -546,5 +550,15 @@ public class PVPManager : MonoBehaviour
             player2.GetComponent<PlayerController>().collectInput = enable;
             player2.GetComponent<PlayerMovement>().SetMoveDirection(Vector3.zero);
         }
+    }
+
+    private void LowerMusicVolume()
+    {
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 0.4f;
+    }
+
+    private void ReturnMusicVolume()
+    {
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 1;
     }
 }

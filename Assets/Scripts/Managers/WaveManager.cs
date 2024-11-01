@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -95,26 +96,28 @@ public class WaveManager : MonoBehaviour
             {
                 if(enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
                 {
-                    if (CheckGameDone())
+                    if (CheckRoomDone())
                     {
-                        gameStateManager.GameWon(player.GetComponent<Player>());
                         waveState = WaveState.Done;
+                        uiManager.EnableLevelCompletedText(room + 1);
+                        if (CheckGameDone())
+                        {
+                            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon(player.GetComponent<Player>())));
+                        }
+                        else
+                        {
+                            StartCoroutine(PerformAfterDelay(5, GoToNextRoom));
+                        }
                     }
                     else
                     {
                         waveState = WaveState.Cooldown;
-                        uiManager.EnableWaveUI(waveCooldown);
-                        if (wave == 9)
-                        {
-                            wave = -1;
-                            room++;
+                        lastWaveTime = Time.time;
 
-                            Room currentRoom = rooms[room];
-                            Camera.main.transform.position = currentRoom.CameraLocation;
+                        bool boss = (wave == 8);
+                        uiManager.PerformWaveCountdown(waveCooldown, boss);
 
-                            player.transform.position = rooms[room].PlayerSpawnLocation;
-                        }
-                        else if (wave == 4)
+                        if (wave == 4)
                         {
                             uiManager.EnableUpgradeUI();
                         }
@@ -122,7 +125,6 @@ public class WaveManager : MonoBehaviour
                         wave++;
                     }
                 }
-                lastWaveTime = Time.time;
             }
             else if (waveState == WaveState.Cooldown)
             {
@@ -135,9 +137,31 @@ public class WaveManager : MonoBehaviour
         }
     }
 
+    public void GoToNextRoom()
+    {
+        waveState = WaveState.Cooldown;
+        lastWaveTime = Time.time;
+
+        uiManager.DisableWaveUI();
+        uiManager.PerformWaveCountdown(waveCooldown, false);
+
+        wave = 0;
+        room++;
+
+        Room currentRoom = rooms[room];
+        Camera.main.transform.position = currentRoom.CameraLocation;
+
+        player.transform.position = rooms[room].PlayerSpawnLocation;
+    }
+
     public Vector3 GetSafePosition()
     {
         return this.rooms[this.room].PlayerSpawnLocation;
+    }
+
+    private bool CheckRoomDone()
+    {
+        return (wave == 9);
     }
 
     private bool CheckGameDone()
@@ -154,7 +178,7 @@ public class WaveManager : MonoBehaviour
         List<Vector3> spawnLocations = new List<Vector3>(currentRoom.spawnLocations);
         if (spawnLocations.Count < amount) throw new System.Exception("Cannot spawn enemies, number of spawn locations is too small");
 
-        return spawnLocations.OrderBy(x => Random.Range(0, spawnLocations.Count)).Take(amount).ToList();
+        return spawnLocations.OrderBy(x => UnityEngine.Random.Range(0, spawnLocations.Count)).Take(amount).ToList();
     }
 
     private void CreateEnemy(GameObject prefab, Vector3 spawnLocation)
@@ -392,5 +416,12 @@ public class WaveManager : MonoBehaviour
         }
 
         return meleeEnemy;
+    }
+
+    private IEnumerator PerformAfterDelay(float delay, Action action)
+    {
+        yield return new WaitForSeconds(delay);
+
+        action();
     }
 }

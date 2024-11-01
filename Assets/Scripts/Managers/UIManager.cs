@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
 
     private GameObject waveUI;
     private Text waveCountdownText;
+    private Text waveText;
 
     private GameObject gameOverUI;
     private GameObject winUI;
@@ -61,6 +62,7 @@ public class UIManager : MonoBehaviour
 
         waveUI = GameObject.Find("WaveUI");
         waveCountdownText = waveUI.transform.Find("Countdown").GetComponent<Text>();
+        waveText = waveUI.transform.Find("Title").GetComponent<Text>();
         waveUI.SetActive(false);
 
         gameOverUI = GameObject.Find("GameOverUI");
@@ -245,9 +247,22 @@ public class UIManager : MonoBehaviour
         text.text = "";
     }
 
-    public void EnableWaveUI(int countdown)
+    public void PerformWaveCountdown(int countdown, bool boss)
     {
         if (waveUI.activeSelf) return;
+
+        if (boss)
+        {
+            ColorUtility.TryParseHtmlString("#FA5C5C", out Color newColor);
+            waveText.color = newColor;
+            waveText.text = "BOSS wave starts in: ";
+        }
+        else
+        {
+            ColorUtility.TryParseHtmlString("#FFFFFF", out Color newColor);
+            waveText.color = newColor;
+            waveText.text = "Next wave starts in: ";
+        }
 
         waveUI.SetActive(true);
         waveCountdownText.text = countdown.ToString();
@@ -255,9 +270,21 @@ public class UIManager : MonoBehaviour
         StartCoroutine(ReduceCountEverySecond(waveCountdownText));
     }
 
+    public void EnableLevelCompletedText(int room)
+    {
+        if (waveUI.activeSelf) return;
+
+        waveUI.SetActive(true);
+        waveText.text = "You beat level " + room + "!";
+    }
+
     public void DisableWaveUI()
     {
         waveCountdownText.text = "";
+        waveText.text = "";
+        ColorUtility.TryParseHtmlString("#FFFFFF", out Color newColor);
+        waveText.color = newColor;
+
         waveUI.SetActive(false);
     }
 
