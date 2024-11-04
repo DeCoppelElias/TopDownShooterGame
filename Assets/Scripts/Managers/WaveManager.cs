@@ -8,7 +8,7 @@ using UnityEngine.Tilemaps;
 public class WaveManager : MonoBehaviour
 {
     public GameStateManager gameState;
-    public GameObject player;
+    public Player player;
 
     public GameObject meleeEnemy;
     public GameObject rangedEnemy;
@@ -42,6 +42,9 @@ public class WaveManager : MonoBehaviour
 
     private UIManager uiManager;
     private GameStateManager gameStateManager;
+    private ScoreManager scoreManager;
+
+    private float playerHealthBeforeWave = 0;
 
     private void Start()
     {
@@ -49,6 +52,7 @@ public class WaveManager : MonoBehaviour
 
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
+        scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
 
         GenerateRooms();
         int roomNumber = 0;
@@ -88,6 +92,7 @@ public class WaveManager : MonoBehaviour
         {
             if (waveState == WaveState.Ready)
             {
+                playerHealthBeforeWave = player.health;
                 SpawnWave();
                 waveState = WaveState.Fighting;
                 fightingStart = Time.time;
@@ -96,13 +101,19 @@ public class WaveManager : MonoBehaviour
             {
                 if(enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
                 {
+                    // Give Score if player did not lose health
+                    if (player.health == playerHealthBeforeWave)
+                    {
+                        scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
+                    }
+
                     if (CheckRoomDone())
                     {
                         waveState = WaveState.Done;
                         uiManager.EnableLevelCompletedText(room + 1);
                         if (CheckGameDone())
                         {
-                            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon(player.GetComponent<Player>())));
+                            StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
                         }
                         else
                         {

@@ -554,11 +554,11 @@ public class PVPManager : MonoBehaviour
 
     private void LowerMusicVolume()
     {
-        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 0.4f;
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume *= 0.5f;
     }
 
     private void ReturnMusicVolume()
     {
-        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 1;
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume *= 2;
     }
 }

@@ -8,9 +8,9 @@ public class ReflectShieldAbility : MonoBehaviour
     public GameObject playerReflectShield;
     public GameObject enemyReflectShield;
 
-    private enum ReflectShieldState { Ready, Reflecting, Cooldown}
+    public enum ReflectShieldState { Ready, Reflecting, Cooldown}
     [SerializeField]
-    private ReflectShieldState reflectShieldState;
+    public ReflectShieldState reflectShieldState;
 
     [SerializeField]
     private float reflectShieldDuration = 0.2f;

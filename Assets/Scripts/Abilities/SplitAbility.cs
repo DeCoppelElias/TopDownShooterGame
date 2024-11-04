@@ -20,6 +20,7 @@ public class SplitAbility : MonoBehaviour
             clone1.GetComponent<Entity>().maxHealth = currentMaxHealth / 2;
             clone1.GetComponent<Entity>().health = currentMaxHealth / 2;
             clone1.GetComponent<Entity>().damage = GetComponent<Entity>().damage / 2;
+            clone1.GetComponent<Entity>().onDeathScore = GetComponent<Entity>().onDeathScore / 4;
             clone1.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;
             clone1.GetComponent<SplitMeleeEnemy>().splitAmount = currentSplitAmount + 1;
             clone1.GetComponent<Rigidbody2D>().mass = rb.mass / 2f;
@@ -30,6 +31,7 @@ public class SplitAbility : MonoBehaviour
             clone2.GetComponent<Entity>().maxHealth = GetComponent<Entity>().maxHealth / 2;
             clone2.GetComponent<Entity>().health = GetComponent<Entity>().maxHealth / 2;
             clone2.GetComponent<Entity>().damage = GetComponent<Entity>().damage / 2;
+            clone2.GetComponent<Entity>().onDeathScore = GetComponent<Entity>().onDeathScore / 4;
             clone2.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;
             clone2.GetComponent<SplitMeleeEnemy>().splitAmount = currentSplitAmount + 1;
             clone2.GetComponent<Rigidbody2D>().mass = rb.mass / 2f;

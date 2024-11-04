@@ -18,7 +18,7 @@ MonoBehaviour:
   maxHealth: 200
   pvpMaxHealth: 200
   health: 100
-  damage: 15
+  damage: 25
   normalMoveSpeed: 5
   shootingMoveSpeed: 2
   invulnerableDuration: 0.5

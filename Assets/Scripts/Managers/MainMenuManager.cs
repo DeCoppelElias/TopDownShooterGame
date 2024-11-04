@@ -46,9 +46,6 @@ public class MainMenuManager : MonoBehaviour
         {
             highScoreUI.SetActive(false);
         }
-
-        // Play music
-        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlayMainMenuMusic();
     }
 
     private void Update()
@@ -67,6 +64,16 @@ public class MainMenuManager : MonoBehaviour
     public void PlayPVP()
     {
         SceneManager.LoadScene("PVP");
+    }
+
+    public void ToLeaderboard()
+    {
+        SceneManager.LoadScene("Leaderboard");
+    }
+
+    public void ToTutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
     }
 
     public void QuitGame()

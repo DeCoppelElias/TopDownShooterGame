@@ -167,12 +167,12 @@ public class GameStateManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void GameOver(Player player)
+    public void GameOver()
     {
         ToPaused();
 
         bool beatHighScore = false;
-        float currentScore = player.score;
+        int currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");
@@ -192,7 +192,7 @@ public class GameStateManager : MonoBehaviour
         onLose.Invoke(beatHighScore, currentScore);
     }
 
-    public void GameWon(Player player)
+    public void GameWon()
     {
         ToPaused();
 
@@ -215,7 +215,7 @@ public class GameStateManager : MonoBehaviour
         }
 
         bool beatHighScore = false;
-        float currentScore = player.score;
+        float currentScore = GameObject.Find("ScoreManager").GetComponent<ScoreManager>().GetScore();
         if (PlayerPrefs.HasKey("HighScore"))
         {
             float highScore = PlayerPrefs.GetFloat("HighScore");

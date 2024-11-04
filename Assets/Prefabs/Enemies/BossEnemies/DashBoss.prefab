@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a891cea6f7405441b4a9f627abc7498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 800
-  health: 800
+  maxHealth: 1000
+  health: 1000
   damage: 20
   moveSpeed: 3
   contactDamage: 15
@@ -162,7 +162,6 @@ MonoBehaviour:
   updateValidPositionCooldown: 2
   outOfBounds: 0
   allowedOutOfBoundsDuration: 1
-  score: 0
   onDeathScore: 1000
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
@@ -184,7 +183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashingState: 0
   dashCooldown: 4
-  dashDuration: 1
+  dashDuration: 0.7
   chargeDuration: 0.5
   dashSpeed: 5
   contactDamageIncrease: 2

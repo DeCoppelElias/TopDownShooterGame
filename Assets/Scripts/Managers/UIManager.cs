@@ -14,8 +14,7 @@ public class UIManager : MonoBehaviour
     private GameObject pauseUI;
 
     private GameObject upgradeUI;
-    [SerializeField]
-    private GameObject upgradeButtonPrefab;
+    [SerializeField] private GameObject upgradeButtonPrefab;
 
     private GameObject abilityUI;
     private GameObject dashAbilityUI;
@@ -37,7 +36,6 @@ public class UIManager : MonoBehaviour
     private PlayerInput playerInput;
 
     private GameObject firstSelected = null;
-
     private string currentControlScheme;
 
     private Player player;
@@ -443,11 +441,11 @@ public class UIManager : MonoBehaviour
 
     private void LowerMusicVolume()
     {
-        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 0.4f;
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume *= 0.5f;
     }
 
     private void ReturnMusicVolume()
     {
-        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume = 1;
+        GameObject.Find("AudioManager").transform.Find("MusicAudioSource").GetComponent<AudioSource>().volume *= 2;
     }
 }

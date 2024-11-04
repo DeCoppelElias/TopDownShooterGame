@@ -9,10 +9,12 @@ public class ReflectShield : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (owner == null) return;
+
         if (collision.GetComponent<Bullet>() && !collision.GetComponent<Bullet>().hit)
         {
             Bullet oldBullet = collision.GetComponent<Bullet>();
-            if (owner.tag != oldBullet.owner.tag)
+            if (oldBullet.owner == null || !oldBullet.owner.CompareTag(owner.tag))
             {
                 Rigidbody2D rbOld = oldBullet.GetComponent<Rigidbody2D>();
 

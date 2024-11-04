@@ -171,8 +171,9 @@ MonoBehaviour:
   contactDamage: 10
   contactHitCooldown: 1
   lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
   outOfBounds: 0
-  score: 0
+  allowedOutOfBoundsDuration: 1
   onDeathScore: 1000
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletTrigger: 0
@@ -193,7 +194,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 0}
 --- !u!58 &-5998817716612518527
 CircleCollider2D:
   m_ObjectHideFlags: 0

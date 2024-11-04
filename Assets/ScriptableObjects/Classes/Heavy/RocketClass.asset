@@ -18,7 +18,7 @@ MonoBehaviour:
   maxHealth: 250
   pvpMaxHealth: 200
   health: 100
-  damage: 50
+  damage: 30
   normalMoveSpeed: 4
   shootingMoveSpeed: 2
   invulnerableDuration: 0.5
@@ -26,7 +26,7 @@ MonoBehaviour:
   contactHitCooldown: 1
   classAbility: {fileID: 11400000, guid: 37fc610b55d68244f9738c3b593e1a4e, type: 2}
   hasShootAbility: 1
-  attackCooldown: 0.7
+  attackCooldown: 0.9
   range: 4
   pierce: 1
   totalSplit: 1

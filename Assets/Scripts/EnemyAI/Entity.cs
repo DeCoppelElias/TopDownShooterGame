@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 public abstract class Entity : MonoBehaviour
@@ -34,10 +35,10 @@ public abstract class Entity : MonoBehaviour
     private int outOfBoundsCounter = 0;
 
     private Entity lastDamageSource;
+    public enum DamageType { Ranged, Melee }
+    private DamageType lastDamageType;
 
-    public float score = 0;
-    [SerializeField]
-    private float onDeathScore = 100;
+    public int onDeathScore = 100;
 
     protected AudioManager audioManager;
 
@@ -71,7 +72,16 @@ public abstract class Entity : MonoBehaviour
     public virtual void OnDeath()
     {
         // Give on death score to last damage source
-        lastDamageSource.GiveScore(onDeathScore);
+        if (lastDamageSource is Player)
+        {
+            GameObject scoreManagerObj = GameObject.Find("ScoreManager");
+            if (scoreManagerObj != null)
+            {
+                ScoreManager scoreManager = scoreManagerObj.GetComponent<ScoreManager>();
+                scoreManager.AddScore(ScoreManager.ScoreReason.EnemyKill, this.onDeathScore);
+                if (lastDamageType == DamageType.Melee) scoreManager.AddScore(ScoreManager.ScoreReason.MeleeKill, this.onDeathScore * 2);
+            }
+        }
 
         // Play death sound
         audioManager.PlayDieSound();
@@ -89,18 +99,14 @@ public abstract class Entity : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(float amount, Entity source)
+    public virtual void TakeDamage(float amount, Entity source, DamageType damageType)
     {
         if (amount <= 0) return;
 
         this.health -= amount;
 
         lastDamageSource = source;
-    }
-
-    public void GiveScore(float score)
-    {
-        this.score += score;
+        lastDamageType = damageType;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -115,7 +121,7 @@ public abstract class Entity : MonoBehaviour
         {
             lastHit = Time.time;
 
-            entity.TakeDamage(contactDamage, this);
+            entity.TakeDamage(contactDamage, this, DamageType.Melee);
         }
     }
 

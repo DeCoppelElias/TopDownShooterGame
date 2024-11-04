@@ -220,7 +220,6 @@ MonoBehaviour:
   updateValidPositionCooldown: 0.5
   outOfBounds: 0
   allowedOutOfBoundsDuration: 0.2
-  score: 0
   onDeathScore: 100
   playerClass: {fileID: 0}
   defaultPlayerClass: {fileID: 11400000, guid: 176d1dc744f2fb04fb65d529bb8baa40, type: 2}
@@ -526,6 +525,10 @@ MonoBehaviour:
     m_ActionId: 6d5cbacb-5927-40b5-9831-a2c8cd6c959e
     m_ActionName: Player/Dash[/Mouse/leftButton,/XInputControllerWindows/rightTrigger,/Keyboard/leftShift,/XInputControllerWindows/leftTrigger]
   - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9e37e68d-af71-4e29-992f-dbe53de96f42
+    m_ActionName: Player/Pause[/Keyboard/escape,/XInputControllerWindows/start]
+  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6450769166791752440}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
@@ -539,10 +542,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: 9e37e68d-af71-4e29-992f-dbe53de96f42
-    m_ActionName: Player/Pause[/Keyboard/escape,/XInputControllerWindows/start]
-  - m_PersistentCalls:
-      m_Calls: []
     m_ActionId: acc0bc59-cbb1-401e-8be1-c0751b0c7f29
     m_ActionName: Player/ClassAbility[/Mouse/rightButton,/XInputControllerWindows/rightShoulder]
   m_NeverAutoSwitchControlSchemes: 0

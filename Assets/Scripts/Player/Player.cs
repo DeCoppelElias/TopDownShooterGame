@@ -15,7 +15,7 @@ public class Player : Entity
     private float invulnerableStart;
 
     private ShootingAbility shootingAbility;
-    private ReflectShieldAbility reflectShieldAbility;
+    private DashAbility dashAbility;
 
     public GameObject bulletWall;
 
@@ -31,7 +31,7 @@ public class Player : Entity
     public override void StartEntity()
     {
         shootingAbility = GetComponent<ShootingAbility>();
-        reflectShieldAbility = GetComponent<ReflectShieldAbility>();
+        dashAbility = GetComponent<DashAbility>();
         playerController = GetComponent<PlayerController>();
 
         if (playerClass == null)
@@ -109,10 +109,11 @@ public class Player : Entity
         }
     }
 
-    public override void TakeDamage(float amount, Entity source)
+    public override void TakeDamage(float amount, Entity source, DamageType damageType)
     {
         if (amount <= 0) return;
         if (Time.time - invulnerableStart < invulnerableDuration) return;
+        if (dashAbility != null && dashAbility.dashingState == DashAbility.DashingState.Dashing) return;
 
         this.health -= amount;
 

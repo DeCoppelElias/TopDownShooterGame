@@ -60,14 +60,4 @@ public class AudioManager : MonoBehaviour
     {
         effectsAudioSource.PlayOneShot(ShootSound, 0.03f * effectsVolume);
     }
-
-    public void PlayMainMenuMusic()
-    {
-        musicAudioSource.PlayOneShot(mainMenuSound, 0.03f * musicVolume);
-    }
-
-    public void PlayGameMusic()
-    {
-        musicAudioSource.PlayOneShot(gameSound, 0.03f * musicVolume);
-    }
 }
