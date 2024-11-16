@@ -26,11 +26,7 @@ Here are the main things I'm proud of:
 
 ### Media
 #### Video Compilation
-<figure class="video_container">
-  <video controls="true" allowfullscreen="true" poster="Media/TitleScreen.png">
-    <source src="Media/TinyShootersCompilation.mp4" type="video/mp4">
-  </video>
-</figure>
+![Tiny Shooters Video Compilation](Media/TinyShootersCompilation.gif)
 
 [Click Here](https://www.youtube.com/watch?v=Tr44kK1eFEw) to view the full video!
 
