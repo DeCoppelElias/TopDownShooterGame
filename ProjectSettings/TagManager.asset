@@ -13,6 +13,7 @@ TagManager:
   - Wall
   - ReflectWall
   - Player2
+  - RecordingCamera
   layers:
   - Default
   - TransparentFX

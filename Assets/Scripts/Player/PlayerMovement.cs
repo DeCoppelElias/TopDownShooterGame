@@ -26,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     private float knockbackStart = 0;
     private float knockbackDuration = 1;
 
+    [SerializeField] private Camera customCamera;
+
     private void Start()
     {
         this.player = this.GetComponent<Player>();
@@ -91,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         else if (Mouse.current != null && Mouse.current.enabled && playerInput.currentControlScheme == "Keyboard&Mouse")
         {
             Vector3 mousePosition = Mouse.current.position.ReadValue();
-            Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            Vector3 worldMousePosition = (customCamera != null) ? customCamera.ScreenToWorldPoint(mousePosition) : Camera.main.ScreenToWorldPoint(mousePosition);
             Vector2 lookDirection = (worldMousePosition - transform.position);
             spriteRenderer.transform.rotation = Quaternion.LookRotation(Vector3.forward, lookDirection);
         }
