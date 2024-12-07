@@ -117,14 +117,9 @@ namespace LeaderboardCreatorDemo
 
         public void UploadEntry()
         {
-            /*if (_usernameInputField.text == "" || Score == 0) return;
+            if (_usernameInputField.text == "" || Score == 0) return;
 
             Leaderboards.ScoreLeaderboard.UploadNewEntry(_usernameInputField.text, Score, isSuccessful =>
-            {
-                if (isSuccessful)
-                    LoadEntries();
-            });*/
-            Leaderboards.ScoreLeaderboard.UploadNewEntry(_usernameInputField.text, 999999999, isSuccessful =>
             {
                 if (isSuccessful)
                     LoadEntries();
