@@ -1,50 +1,59 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class WaveManager : MonoBehaviour
 {
-    public GameStateManager gameState;
-    public Player player;
+    public string levelsFilePath = "Assets/Levels/";
 
-    public GameObject meleeEnemy;
-    public GameObject rangedEnemy;
-    public GameObject fastEnemy;
-    public GameObject shotgunEnemy;
-    public GameObject chargeMeleeEnemy;
-    public GameObject dodgeMeleeEnemy;
-    public GameObject dodgeRangedEnemy;
+    [Header("Level Settings")]
+    [SerializeField] private int waveIndex = 0;
+    [SerializeField] private int levelIndex = 0;
+    [SerializeField] private int totalLevels = 3;
+    [SerializeField] private int waveCooldown = 5;
 
-    public GameObject dashBoss;
-    public GameObject splitBoss;
-    public GameObject rangedBoss;
+    private Dictionary<int,Level> levels = new Dictionary<int,Level>();
 
-    public GameObject enemies;
+    [Header("Enemy Prefabs")]
+    [SerializeField] private GameObject meleeEnemy;
+    [SerializeField] private GameObject rangedEnemy;
+    [SerializeField] private GameObject fastEnemy;
+    [SerializeField] private GameObject shotgunEnemy;
+    [SerializeField] private GameObject chargeMeleeEnemy;
+    [SerializeField] private GameObject dodgeMeleeEnemy;
+    [SerializeField] private GameObject dodgeRangedEnemy;
 
-    public Tilemap groundTilemap;
-    public Tilemap wallTilemap;
-    public Tilemap warningTilemap;
-    public Tile warningTile;
+    [Header("Boss Prefabs")]
+    [SerializeField] private GameObject dashBoss;
+    [SerializeField] private GameObject splitBoss;
+    [SerializeField] private GameObject rangedBoss;
 
-    public enum WaveState {Fighting, Ready, Cooldown, Done}
-    public WaveState waveState = WaveState.Cooldown;
-    public int waveCooldown = 5;
-    private float lastWaveTime = 0;
 
-    public int wave = 1;
-    public int room = 0;
+    [Header("Tilemaps")]
+    [SerializeField] private Tilemap groundTilemap;
+    [SerializeField] private Tilemap wallTilemap;
+    [SerializeField] private Tilemap warningTilemap;
+    [SerializeField] private Tile warningTile;
 
-    private float minFightingDuration = 3f;
-    private float fightingStart = 0;
+    private enum WaveState { Fighting, Ready, Cooldown, Done }
+    [Header("State")]
+    [SerializeField] private WaveState waveState = WaveState.Cooldown;
+    [SerializeField] private GameObject enemies;
 
     private UIManager uiManager;
     private GameStateManager gameStateManager;
     private ScoreManager scoreManager;
+    private Player player;
 
+    private float lastWaveTime = 0;
+    private float minFightingDuration = 3f;
+    private float fightingStart = 0;
     private float playerHealthBeforeWave = 0;
+
 
     private void Start()
     {
@@ -53,53 +62,26 @@ public class WaveManager : MonoBehaviour
         uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         gameStateManager = GameObject.Find("GameStateManager").GetComponent<GameStateManager>();
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
+        player = GameObject.Find("Player").GetComponent<Player>();
 
-        GenerateRooms();
-        int roomNumber = 0;
-        foreach (Room room in rooms)
-        {
-            //Debug.Log("Camera location in room " + roomNumber + ": " + room.CameraLocation);
-
-            string s = "";
-            foreach (Vector3 spawnLoc in room.spawnLocations)
-            {
-                s += spawnLoc.ToString();
-            }
-            //Debug.Log("Spawn locations in room " + roomNumber + ": " + s);
-
-            int waveNumber = 0;
-            foreach (Wave wave in room.waves)
-            {
-                s = "";
-                foreach ((string, int) enemy in wave.enemies)
-                {
-                    s += enemy.ToString();
-                }
-                //Debug.Log("Enemies in room " + roomNumber + " wave " + waveNumber + ": " + s);
-
-                waveNumber++;
-            }
-
-            roomNumber++;
-        }
-        Room currentRoom = rooms[room];
-        Camera.main.transform.position = currentRoom.CameraLocation;
-        player.transform.position = currentRoom.PlayerSpawnLocation;
+        LoadLevel(this.levelIndex);
+        SetupCurrentLevel();
     }
+
     void Update()
     {
-        if (wave >= 0)
+        if (waveIndex >= 0)
         {
             if (waveState == WaveState.Ready)
             {
                 playerHealthBeforeWave = player.health;
-                SpawnWave();
+                SpawnWave(this.levelIndex, this.waveIndex);
                 waveState = WaveState.Fighting;
                 fightingStart = Time.time;
             }
             else if (waveState == WaveState.Fighting)
             {
-                if(enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
+                if (enemies.transform.childCount == 0 && Time.time - fightingStart > minFightingDuration)
                 {
                     // Give Score if player did not lose health
                     if (player.health == playerHealthBeforeWave)
@@ -107,39 +89,40 @@ public class WaveManager : MonoBehaviour
                         scoreManager.AddScore(ScoreManager.ScoreReason.PerfectWave, 1000);
                     }
 
-                    if (CheckRoomDone())
+                    if (CheckLastWave())
                     {
                         waveState = WaveState.Done;
-                        uiManager.EnableLevelCompletedText(room + 1);
-                        if (CheckGameDone())
+                        uiManager.EnableLevelCompletedText(levelIndex + 1);
+                        if (CheckLastLevel())
                         {
                             StartCoroutine(PerformAfterDelay(5, () => gameStateManager.GameWon()));
                         }
                         else
                         {
-                            StartCoroutine(PerformAfterDelay(5, GoToNextRoom));
+                            StartCoroutine(PerformAfterDelay(5, NextLevel));
                         }
                     }
                     else
                     {
+                        waveIndex++;
+
                         waveState = WaveState.Cooldown;
                         lastWaveTime = Time.time;
 
-                        bool boss = (wave == 8);
-                        uiManager.PerformWaveCountdown(waveCooldown, boss);
+                        Level level = GetLevel(this.levelIndex);
+                        Wave wave = level.GetWave(waveIndex);
+                        uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
 
-                        if (wave == 4)
+                        if (waveIndex == 4)
                         {
                             uiManager.EnableUpgradeUI();
                         }
-
-                        wave++;
                     }
                 }
             }
             else if (waveState == WaveState.Cooldown)
             {
-                if(Time.time > lastWaveTime + waveCooldown)
+                if (Time.time > lastWaveTime + waveCooldown)
                 {
                     waveState = WaveState.Ready;
                     uiManager.DisableWaveUI();
@@ -148,46 +131,119 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    public void GoToNextRoom()
+    private void LoadLevel(int levelIndex)
+    {
+        string path = $"{levelsFilePath}level{levelIndex}.json";
+
+        if (!File.Exists(path))
+        {
+            Debug.LogError("Level json does not exist: " + path);
+            return;
+        }
+
+        string json = File.ReadAllText(path);
+        Level level = JsonUtility.FromJson<Level>(json);
+
+        if (level == null)
+        {
+            Debug.LogError("Level json is not correct: " + path);
+            return;
+        }
+
+        levels.Add(levelIndex, level);
+        level.Log();
+    }
+
+    private void SetupCurrentLevel()
+    {
+        Level level = GetLevel(this.levelIndex);
+
+        Camera.main.transform.position = level.GetCameraLocation();
+        player.transform.position = level.GetPlayerSpawnLocation();
+    }
+
+    private Level GetLevel(int levelIndex)
+    {
+        if (!levels.ContainsKey(levelIndex))
+        {
+            LoadLevel(levelIndex);
+        }
+
+        return levels[levelIndex];
+    }
+
+    private void SpawnWave(int levelIndex, int waveIndex)
+    {
+        Level level = GetLevel(levelIndex);
+        Wave wave = level.GetWave(waveIndex);
+        List<EnemyCount> enemies = wave.enemies;
+
+        int totalCount = 0;
+        foreach (EnemyCount enemyCount in enemies)
+        {
+            if (!enemyCount.customSpawn) totalCount += enemyCount.amount;
+        }
+        List<Vector3> spawnLocations = FindSpawnLocations(totalCount);
+
+        int count = 0;
+        foreach (EnemyCount enemyCount in enemies)
+        {
+            GameObject prefab = StringToPrefab(enemyCount.type);
+            for (int i = 0; i < enemyCount.amount; i++)
+            {
+                if (!enemyCount.customSpawn)
+                {
+                    CreateEnemy(prefab, spawnLocations[count]);
+                    count += 1;
+                }
+                else
+                {
+                    CreateEnemy(prefab, level.roomLocation.ToVector3() + enemyCount.customSpawnLocation.ToVector3());
+                }
+            }
+        }
+    }
+
+    public void NextLevel()
     {
         waveState = WaveState.Cooldown;
         lastWaveTime = Time.time;
 
+        waveIndex = 0;
+        levelIndex++;
+
+        Level level = GetLevel(levelIndex);
+        Wave wave = level.GetWave(waveIndex);
+
         uiManager.DisableWaveUI();
-        uiManager.PerformWaveCountdown(waveCooldown, false);
+        uiManager.PerformWaveCountdown(waveCooldown, wave.boss);
 
-        wave = 0;
-        room++;
-
-        Room currentRoom = rooms[room];
-        Camera.main.transform.position = currentRoom.CameraLocation;
-
-        player.transform.position = rooms[room].PlayerSpawnLocation;
+        SetupCurrentLevel();
     }
 
     public Vector3 GetSafePosition()
     {
-        return this.rooms[this.room].PlayerSpawnLocation;
+        Level level = GetLevel(this.levelIndex);
+
+        return level.GetPlayerSpawnLocation();
     }
 
-    private bool CheckRoomDone()
+    private bool CheckLastWave()
     {
-        return (wave == 9);
+        Level level = GetLevel(this.levelIndex);
+        return this.waveIndex == level.GetWaveCount() - 1;
     }
 
-    private bool CheckGameDone()
+    private bool CheckLastLevel()
     {
-        if (room == rooms.Count - 1 && wave == 9) return true;
-        return false;
+        return (levelIndex == totalLevels - 1);
     }
 
     private List<Vector3> FindSpawnLocations(int amount)
     {
-        if (room < 0) throw new System.Exception("Room does not exist");
-
-        Room currentRoom = rooms[room];
-        List<Vector3> spawnLocations = new List<Vector3>(currentRoom.spawnLocations);
-        if (spawnLocations.Count < amount) throw new System.Exception("Cannot spawn enemies, number of spawn locations is too small");
+        Level level = GetLevel(levelIndex);
+        List<Vector3> spawnLocations = new List<Vector3>(level.GetSpawnLocations());
+        if (spawnLocations.Count < amount) throw new Exception("Cannot spawn enemies, number of spawn locations is too small");
 
         return spawnLocations.OrderBy(x => UnityEngine.Random.Range(0, spawnLocations.Count)).Take(amount).ToList();
     }
@@ -206,180 +262,6 @@ public class WaveManager : MonoBehaviour
         enemy.transform.SetParent(enemies.transform);
 
         warningTilemap.SetTile(Vector3Int.FloorToInt(spawnLocation), null);
-    }
-
-    [SerializeField]
-    public class Wave
-    {
-        public List<(string,int)> enemies = new List<(string, int)>();
-    }
-
-    [SerializeField]
-    public class Room
-    {
-        public List<Wave> waves = new List<Wave>();
-        public Vector3 CameraLocation;
-        public List<Vector3> spawnLocations = new List<Vector3>();
-        public Vector3 PlayerSpawnLocation;
-    }
-
-    public List<Room> rooms = new List<Room>();
-    public TextAsset roomsInfo;
-
-    void SpawnWave()
-    {
-        Room currentRoom = rooms[room];
-        Wave currentwave = currentRoom.waves[wave];
-        List<(string, int)> enemies = currentwave.enemies;
-
-        int enemyCount = 0;
-        foreach ((string, int) enemy in enemies)
-        {
-            enemyCount += enemy.Item2;
-        }
-
-        List<Vector3> spawnLocations = FindSpawnLocations(enemyCount);
-
-        int count = 0;
-        foreach ((string, int) enemyTuple in enemies)
-        {
-            string enemyName = enemyTuple.Item1;
-            int amount = enemyTuple.Item2;
-
-            GameObject prefab = StringToPrefab(enemyName);
-            for (int i = 0; i < amount; i++)
-            {
-                CreateEnemy(prefab, spawnLocations[count]);
-                count += 1;
-            }
-        }
-    }
-    public void GenerateRooms()
-    {
-        string roomText = roomsInfo.text;
-
-        int index = 0;
-        while (index < roomText.Length)
-        {
-            Room newRoom = new Room();
-            //ex = 0,0,0|
-            string s1 = "";
-            while (roomText[index] != ',')
-            {
-                s1 += roomText[index];
-                index++;
-            }
-            index++;
-            string s2 = "";
-            while (roomText[index] != ',')
-            {
-                s2 += roomText[index];
-                index++;
-            }
-            index++;
-            string s3 = "";
-            while (roomText[index] != '|')
-            {
-                s3 += roomText[index];
-                index++;
-            }
-            newRoom.PlayerSpawnLocation = new Vector3(float.Parse(s1), float.Parse(s2), float.Parse(s3));
-
-            //ex = 0,0,0|
-            index++;
-            s1 = "";
-            while (roomText[index] != ',')
-            {
-                s1 += roomText[index];
-                index++;
-            }
-            index++;
-            s2 = "";
-            while (roomText[index] != ',')
-            {
-                s2 += roomText[index];
-                index++;
-            }
-            index++;
-            s3 = "";
-            while (roomText[index] != '|')
-            {
-                s3 += roomText[index];
-                index++;
-            }
-            newRoom.CameraLocation = new Vector3(float.Parse(s1), float.Parse(s2), float.Parse(s3));
-            //Debug.Log(newRoom.CameraLocation);
-
-            //ex = 0,0,0&1,1,1|
-            index++;
-            while (roomText[index] != '|')
-            {
-                s1 = "";
-                while (roomText[index] != ',')
-                {
-                    s1 += roomText[index];
-                    index++;
-                }
-                index++;
-                s2 = "";
-                while (roomText[index] != ',')
-                {
-                    s2 += roomText[index];
-                    index++;
-                }
-                index++;
-                s3 = "";
-                while (roomText[index] != '&' && roomText[index] != '|')
-                {
-                    s3 += roomText[index];
-                    index++;
-                }
-                if (roomText[index] == '&')
-                {
-                    index++;
-                }
-                newRoom.spawnLocations.Add(new Vector3(float.Parse(s1), float.Parse(s2), float.Parse(s3)));
-            }
-
-            //ex = MeleeEnemy:5&MeleeEnemy:3,RangedEnemy:2\n
-            index++;
-            while (roomText[index] != '.')
-            {
-                Wave newWave = new Wave();
-                while (roomText[index] != '\n' && roomText[index] != '.')
-                {
-                    string enemy = "";
-                    while (roomText[index] != ':')
-                    {
-                        enemy += roomText[index];
-                        index++;
-                    }
-                    index++;
-                    s1 = "";
-                    while (roomText[index] != ',' && roomText[index] != '\n' && roomText[index] != '.')
-                    {
-                        s1 += roomText[index];
-                        index++;
-                    }
-                    if (roomText[index] == ',')
-                    {
-                        index++;
-                    }
-                    newWave.enemies.Add((enemy, int.Parse(s1)));
-                }
-                if (roomText[index] == '\n')
-                {
-                    index++;
-                }
-                newRoom.waves.Add(newWave);
-            }
-            while (roomText[index] != '\n' && index < roomText.Length)
-            {
-                index++;
-            }
-            index++;
-            rooms.Add(newRoom);
-        }
     }
 
     public GameObject StringToPrefab(string s)
@@ -434,5 +316,95 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         action();
+    }
+
+    [System.Serializable]
+    public class Level
+    {
+        public Location roomLocation;
+        public Location cameraLocation;
+        public Location playerSpawnLocation;
+        public List<Location> spawnLocations;
+        public List<Wave> waves;
+
+        public Wave GetWave(int index)
+        {
+            if (index < waves.Count && index >= 0)
+            {
+                return waves[index];
+            }
+            throw new Exception("Wave does not exist!");
+        }
+
+        public List<Vector3> GetSpawnLocations()
+        {
+            List<Vector3> result = new List<Vector3>();
+            foreach (Location location in spawnLocations)
+            {
+                result.Add(roomLocation.ToVector3() + location.ToVector3());
+            }
+            return result;
+        }
+
+        public Vector3 GetCameraLocation()
+        {
+            return roomLocation.ToVector3() + cameraLocation.ToVector3();
+        }
+        public Vector3 GetPlayerSpawnLocation()
+        {
+            return roomLocation.ToVector3() + playerSpawnLocation.ToVector3();
+        }
+
+        public int GetWaveCount()
+        {
+            return waves.Count;
+        }
+
+        public void Log()
+        {
+            Debug.Log($"Loaded Level: {this.roomLocation.ToVector3()}");
+            Debug.Log($"Camera Location: {this.cameraLocation.ToVector3()}");
+            Debug.Log($"Player Spawn Location: {this.playerSpawnLocation.ToVector3()}");
+            Debug.Log($"Enemy Spawn Locations: {this.spawnLocations.Count}");
+
+            foreach (var wave in this.waves)
+            {
+                Debug.Log($"Wave {wave.waveNumber}");
+                foreach (var enemy in wave.enemies)
+                {
+                    Debug.Log($"Enemy Type: {enemy.type}, Amount: {enemy.amount}");
+                }
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class Wave
+    {
+        public int waveNumber;
+        public List<EnemyCount> enemies;
+        public bool boss = false;
+    }
+
+    [System.Serializable]
+    public class EnemyCount
+    {
+        public string type;
+        public int amount;
+        public bool customSpawn = false;
+        public Location customSpawnLocation;
+    }
+
+    [System.Serializable]
+    public class Location
+    {
+        public float x;
+        public float y;
+        public float z;
+
+        public Vector3 ToVector3()
+        {
+            return new Vector3(x, y, z);
+        }
     }
 }

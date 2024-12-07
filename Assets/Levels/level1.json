@@ -1,0 +1,144 @@
+{
+    "roomLocation": {
+            "x": 0,
+            "y": 11,
+            "z": 0
+    },
+    "cameraLocation": {
+        "x": 0,
+        "y": 0,
+        "z": -10
+    },
+    "playerSpawnLocation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    },
+    "spawnLocations": [
+        { "x": -1.5, "y": -3.5, "z": 0 }, { "x": -0.5, "y": -3.5, "z": 0 }, { "x": 0.5, "y": -3.5, "z": 0 }, { "x": 1.5, "y": -3.5, "z": 0 },
+        { "x": -0.5, "y": -2.5, "z": 0 },  { "x": 0.5, "y": -2.5, "z": 0 }, 
+        { "x": -1.5, "y": 3.5, "z": 0 }, { "x": -0.5, "y": 3.5, "z": 0 }, { "x": 0.5, "y": 3.5, "z": 0 }, { "x": 1.5, "y": 3.5, "z": 0 },
+        { "x": -0.5, "y": 2.5, "z": 0 }, { "x": 0.5, "y": 2.5, "z": 0 }
+    ],
+    "waves": [
+        {
+            "waveNumber": 1,
+            "enemies": [
+                {
+                    "type": "RangedEnemy",
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "waveNumber": 2,
+            "enemies": [
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "waveNumber": 3,
+            "enemies": [
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 2
+                }
+            ]
+        },
+        {
+            "waveNumber": 4,
+            "enemies": [
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 2
+                }
+            ]
+        },
+        {
+            "waveNumber": 5,
+            "enemies": [
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "waveNumber": 6,
+            "enemies": [
+                {
+                    "type": "FastEnemy",
+                    "amount": 6
+                }
+            ]
+        },
+        {
+            "waveNumber": 7,
+            "enemies": [
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 3
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "waveNumber": 8,
+            "enemies": [
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "ShotgunEnemy",
+                    "amount": 2
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 2
+                }
+            ]
+        },
+        {
+            "waveNumber": 9,
+            "enemies": [
+                {
+                    "type": "MeleeEnemy",
+                    "amount": 3
+                },
+                {
+                    "type": "RangedEnemy",
+                    "amount": 3
+                },
+                {
+                    "type": "FastEnemy",
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "waveNumber": 10,
+            "enemies": [
+                {
+                    "type": "DashBoss",
+                    "amount": 2
+                }
+            ],
+            "boss": true
+        }
+    ]
+}
