@@ -24,7 +24,7 @@ namespace LeaderboardCreatorDemo
         [SerializeField] private Text bestScoreText;
         [SerializeField] private Text rankText;
 
-        private List<Text> _entryTextObjects = new List<Text>();
+        private List<GameObject> _entryObjects = new List<GameObject>();
         [SerializeField] private InputField _usernameInputField;
 
         [SerializeField] private PlayerInput playerInput;
@@ -53,21 +53,21 @@ namespace LeaderboardCreatorDemo
 
         private void CreateEntries(int amount)
         {
-            int currentAmount = _entryTextObjects.Count;
+            int currentAmount = _entryObjects.Count;
             if (currentAmount < amount)
             {
                 for (int i = 0; i < amount - currentAmount; i++)
                 {
-                    _entryTextObjects.Add(Instantiate(_entryPrefab, _contentParent).GetComponentInChildren<Text>());
+                    _entryObjects.Add(Instantiate(_entryPrefab, _contentParent));
                 }
             }
             else if (currentAmount > amount)
             {
                 for (int i = 0; i < currentAmount - amount; i++)
                 {
-                    Text currentText = _entryTextObjects[i];
-                    _entryTextObjects.RemoveAt(i);
-                    Destroy(currentText.gameObject);
+                    GameObject currentEntry = _entryObjects[i];
+                    _entryObjects.RemoveAt(i);
+                    Destroy(currentEntry);
                 }
             }
         }
@@ -76,8 +76,11 @@ namespace LeaderboardCreatorDemo
         {
             Leaderboards.ScoreLeaderboard.GetEntries(entries =>
             {
-                foreach (var t in _entryTextObjects)
-                    t.text = "";
+                foreach (GameObject entryObject in _entryObjects)
+                {
+                    entryObject.transform.Find("Name").GetComponent<Text>().text = "";
+                    entryObject.transform.Find("Score").GetComponent<Text>().text = "";
+                }
 
                 var length = Mathf.Min(maxEntries, entries.Length);
                 CreateEntries(length);
@@ -86,12 +89,18 @@ namespace LeaderboardCreatorDemo
                 for (int i = 0; i < length; i++)
                 {
                     Entry entry = entries[i];
-                    Text entryTextObject = _entryTextObjects[i];
-                    entryTextObject.text = $"{entry.Rank}. {entry.Username} - {entry.Score}";
+                    GameObject entryObject = _entryObjects[i];
+                    Text nameText = entryObject.transform.Find("Name").GetComponent<Text>();
+                    Text scoreText = entryObject.transform.Find("Score").GetComponent<Text>();
+                    GameObject crown = entryObject.transform.Find("Crown").gameObject;
+
+                    nameText.text = $"{entry.Rank}. {entry.Username}";
+                    scoreText.text = $"{entry.Score}";
+                    if (entry.Rank != 1) crown.SetActive(false);
 
                     if (entry.IsMine())
                     {
-                        entryTextObject.GetComponentInParent<Image>().color = Color.white;
+                        entryObject.GetComponent<Image>().color = Color.white;
 
                         rankText.text = entry.Rank.ToString();
 
@@ -108,9 +117,14 @@ namespace LeaderboardCreatorDemo
 
         public void UploadEntry()
         {
-            if (_usernameInputField.text == "") return;
+            /*if (_usernameInputField.text == "" || Score == 0) return;
 
             Leaderboards.ScoreLeaderboard.UploadNewEntry(_usernameInputField.text, Score, isSuccessful =>
+            {
+                if (isSuccessful)
+                    LoadEntries();
+            });*/
+            Leaderboards.ScoreLeaderboard.UploadNewEntry(_usernameInputField.text, 999999999, isSuccessful =>
             {
                 if (isSuccessful)
                     LoadEntries();
