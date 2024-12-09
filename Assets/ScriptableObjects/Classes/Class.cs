@@ -8,7 +8,6 @@ public class Class : ScriptableObject
     // General Settings
     public string className;
     public Sprite blueSprite;
-    public Sprite redSprite;
 
     public float maxHealth = 100;
     public float pvpMaxHealth = 100;

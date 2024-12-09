@@ -24,9 +24,9 @@ public class Player : Entity
 
     public bool isPVP = false;
 
-    public bool blue = true;
-
     private PlayerController playerController;
+
+    [SerializeField] private List<Sprite> alternativeSprites = new List<Sprite>();
 
     public override void StartEntity()
     {
@@ -38,18 +38,54 @@ public class Player : Entity
         {
             playerClass = defaultPlayerClass;
         }
-        ApplyClass(playerClass, blue);
+        ApplyClass(playerClass);
     }
 
-    public void ApplyClass(Class playerClass, bool blue)
+    public override void UpdateEntity()
+    {
+        base.UpdateEntity();
+
+        if (playerClass == null) return;
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            SpriteRenderer renderer = this.GetComponentInChildren<SpriteRenderer>();
+            if (renderer != null)
+            {
+                if (renderer.sprite == playerClass.blueSprite)
+                {
+                    renderer.sprite = alternativeSprites[0];
+                }
+                else
+                {
+                    for (int i = 0; i < alternativeSprites.Count; i++)
+                    {
+                        if (renderer.sprite == alternativeSprites[i])
+                        {
+                            if (i == alternativeSprites.Count - 1)
+                            {
+                                renderer.sprite = playerClass.blueSprite;
+                            }
+                            else
+                            {
+                                renderer.sprite = alternativeSprites[i + 1];
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void ApplyClass(Class playerClass)
     {
         this.playerClass = playerClass;
 
         SpriteRenderer renderer = this.GetComponentInChildren<SpriteRenderer>();
         if (renderer != null)
         {
-            if (blue) renderer.sprite = playerClass.blueSprite;
-            else renderer.sprite = playerClass.redSprite;
+            renderer.sprite = playerClass.blueSprite;
         }
 
         if (!isPVP) this.maxHealth = playerClass.maxHealth;

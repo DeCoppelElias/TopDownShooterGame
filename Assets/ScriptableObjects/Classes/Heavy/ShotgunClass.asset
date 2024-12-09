@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   className: Shotgun Heavy
   blueSprite: {fileID: 21300000, guid: 1aca28879e46a0a4caeda669de110f8e, type: 3}
-  redSprite: {fileID: 21300000, guid: cdccfe90ece2c8d44aa42c402e2bd87a, type: 3}
+  alternativeSprites:
+  - {fileID: 21300000, guid: df7bdee88f54a7c4b9003cc6656f7457, type: 3}
+  - {fileID: 21300000, guid: 03c18aa859647ad4d9dc500b4a919ca2, type: 3}
   maxHealth: 250
   pvpMaxHealth: 200
   health: 100

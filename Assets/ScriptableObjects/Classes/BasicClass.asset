@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   className: Basic
   blueSprite: {fileID: 21300000, guid: c78707e0c0f03114bb2c131bdd4a8d4e, type: 3}
-  redSprite: {fileID: 21300000, guid: 6c4464aabe943ec43b079e4972787f69, type: 3}
+  alternativeSprites:
+  - {fileID: 21300000, guid: df7bdee88f54a7c4b9003cc6656f7457, type: 3}
+  - {fileID: 21300000, guid: 03c18aa859647ad4d9dc500b4a919ca2, type: 3}
   maxHealth: 100
   pvpMaxHealth: 150
   health: 100
@@ -24,7 +26,7 @@ MonoBehaviour:
   invulnerableDuration: 0.5
   contactDamage: 10
   contactHitCooldown: 1
-  classAbilityScript: {fileID: 0}
+  classAbility: {fileID: 0}
   hasShootAbility: 1
   attackCooldown: 0.4
   range: 5

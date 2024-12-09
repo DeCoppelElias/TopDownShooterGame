@@ -92,10 +92,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5543180834460776189}
   - component: {fileID: 7486414029700609569}
-  - component: {fileID: 334273813347261035}
-  - component: {fileID: 1972474763877778838}
   - component: {fileID: 4259256228008340316}
   - component: {fileID: 8317446749952802072}
+  - component: {fileID: -5147722406520991190}
   m_Layer: 0
   m_Name: TestEnemy
   m_TagString: Enemy
@@ -140,71 +139,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &334273813347261035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 369238117441939457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cef1dd1f90f86744b811a990fc4971f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 200
-  health: 200
-  damage: 10
-  moveSpeed: 1
-  contactDamage: 0
-  contactHitCooldown: 1
-  lastValidPosition: {x: 0, y: 0, z: 0}
-  updateValidPositionCooldown: 2
-  outOfBounds: 0
-  allowedOutOfBoundsDuration: 1
-  onDeathScore: 50
-  bulletDirection: {x: 0, y: 0, z: 0}
-  bulletTrigger: 0
-  dodingRange: 1
-  dodgingObstacle: 0
-  dodgeObstaclePath: []
-  player: {fileID: 0}
---- !u!114 &1972474763877778838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 369238117441939457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaf7ee882e3e9b43ac7d2a8a0cd8dd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bullets: {fileID: 0}
-  attackCooldown: 1.5
-  range: 6
-  pierce: 1
-  totalSplit: 1
-  totalFan: 1
-  bulletSize: 1
-  bulletSpeed: 6
-  splitOnHit: 0
-  splitAmount: 0
-  splitRange: 1
-  splitBulletSize: 0.5
-  splitBulletSpeed: 6
-  splitDamagePercentage: 0.5
-  shootingMoveSpeed: 2
-  shooting: 0
-  workWithRealTime: 0
-  bulletPrefab: {fileID: 3904042468818896706, guid: 7709d2fb16adc5b44aa98577c92a9be6, type: 3}
-  firePoint: {fileID: 5361021542842070261}
-  owner: {fileID: 0}
-  damage: 10
-  onShoot:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &4259256228008340316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,6 +151,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6812fd11495c7804d882a9214a2fa334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debug: 1
+  debugTilemap: {fileID: 0}
+  debugTile: {fileID: 11400000, guid: 20a96eecac8fdf244b1590a6a33391b1, type: 2}
 --- !u!58 &8317446749952802072
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -233,6 +170,35 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.333
+--- !u!114 &-5147722406520991190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369238117441939457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5997db3c1447434eba712c0b87770b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  health: 100
+  damage: 10
+  moveSpeed: 3
+  contactDamage: 10
+  contactHitCooldown: 1
+  lastValidPosition: {x: 0, y: 0, z: 0}
+  updateValidPositionCooldown: 2
+  outOfBounds: 0
+  allowedOutOfBoundsDuration: 1
+  onDeathScore: 100
+  bulletDirection: {x: 0, y: 0, z: 0}
+  bulletTrigger: 0
+  dodingRange: 1
+  dodgingObstacle: 0
+  dodgeObstaclePath: []
+  player: {fileID: 0}
 --- !u!1 &762498617282380404
 GameObject:
   m_ObjectHideFlags: 0

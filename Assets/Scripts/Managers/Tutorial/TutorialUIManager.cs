@@ -105,13 +105,12 @@ public class TutorialUIManager : MonoBehaviour
             text.text = currentPlayerClass.className;
 
             Image image = buttonTransform.Find("Sprite").GetComponent<Image>();
-            if (player.blue) image.sprite = currentPlayerClass.blueSprite;
-            else image.sprite = currentPlayerClass.redSprite;
+            image.sprite = currentPlayerClass.blueSprite;
 
             Button button = buttonTransform.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => {
-                player.ApplyClass(currentPlayerClass, player.blue);
+                player.ApplyClass(currentPlayerClass);
                 DisableUpgradeUI();
             });
         }
