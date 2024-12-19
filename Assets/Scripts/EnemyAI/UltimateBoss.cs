@@ -15,6 +15,6 @@ public class UltimateBoss : Enemy
         {
 
         }
-        WalkToPlayer();
+        WalkToPlayerUpdate();
     }
 }

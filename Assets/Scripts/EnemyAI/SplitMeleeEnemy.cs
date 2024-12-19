@@ -5,13 +5,9 @@ using UnityEngine;
 public class SplitMeleeEnemy : MeleeEnemy
 {
     public float splitAmount = 0;
-    public override void UpdateEntity()
+    public override void OnDeath()
     {
-        base.UpdateEntity();
-
-        if (health <= 0)
-        {
-            GetComponent<SplitAbility>().Split((player.transform.position - transform.position).normalized);
-        }
+        GetComponent<SplitAbility>().Split((player.transform.position - transform.position).normalized);
+        base.OnDeath();
     }
 }

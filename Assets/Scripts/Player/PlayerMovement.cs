@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,7 +7,11 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Player))]
 public class PlayerMovement : MonoBehaviour
 {
-    private float currentMoveSpeed;
+    [Header("Movement Parameters")]
+    [SerializeField] private float targetVelocity;
+    private enum MovementState { Normal, Knockback, Reduced, }
+    [SerializeField] private MovementState movementState = MovementState.Normal;
+
     private Vector2 currentMoveDirection = Vector2.zero;
 
     private Vector2 currentLookInput = Vector2.zero;
@@ -20,13 +25,14 @@ public class PlayerMovement : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
-    private bool knockback = false;
     private Vector3 knockbackDirection;
     private float knockbackSpeed = 10;
     private float knockbackStart = 0;
     private float knockbackDuration = 1;
 
     [SerializeField] private Camera customCamera;
+
+    private float lastShot;
 
     private void Start()
     {
@@ -37,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         this.dashAbility = this.GetComponent<DashAbility>();
         this.shootAbility = this.GetComponent<ShootingAbility>();
 
-        this.currentMoveSpeed = player.moveSpeed;
+        this.targetVelocity = player.moveSpeed;
 
         this.spriteRenderer = transform.Find("PlayerSprite").GetComponent<SpriteRenderer>();
     }
@@ -53,34 +59,49 @@ public class PlayerMovement : MonoBehaviour
     {
         // Don't move if dashing
         if (dashAbility != null && (dashAbility.dashingState == DashAbility.DashingState.Dashing || dashAbility.dashingState == DashAbility.DashingState.Charging)) return;
-        
+
         // If knockback, move in knockback direction
-        if (knockback)
+        if (this.movementState == MovementState.Knockback)
         {
+            playerRB.velocity = knockbackDirection * knockbackSpeed;
+
+            // If knockback is over, return to normal movement
             if (Time.time - knockbackStart > knockbackDuration || playerRB.velocity == Vector2.zero)
             {
-                knockback = false;
-                playerRB.velocity = Vector2.zero;
-            }
-            else
-            {
-                playerRB.velocity = knockbackDirection * knockbackSpeed;
+                this.movementState = MovementState.Normal;
             }
         }
-        else
+        else if (this.movementState == MovementState.Normal)
         {
+            playerRB.velocity = currentMoveDirection * player.moveSpeed;
+
             // Slow down if shooting
             if (shootAbility != null && shootAbility.shooting)
             {
-                this.currentMoveSpeed = shootAbility.shootingMoveSpeed;
+                this.movementState = MovementState.Reduced;
             }
-            else
-            {
-                this.currentMoveSpeed = player.moveSpeed;
-            }
-
-            playerRB.velocity = currentMoveDirection * currentMoveSpeed;
         }
+        else if (this.movementState == MovementState.Reduced)
+        {
+            playerRB.velocity = currentMoveDirection * shootAbility.shootingMoveSpeed;
+
+            // If shooting is done, return to normal movement after delay
+            if (shootAbility != null && shootAbility.shooting)
+            {
+                lastShot = Time.time;
+            }
+            else if (Time.time - lastShot > 0.2f)
+            {
+                this.movementState = MovementState.Normal;
+            }
+        }
+    }
+
+    private IEnumerator PerformActionAfterDelay(float delay, Action action)
+    {
+        yield return new WaitForSeconds(delay);
+
+        action();
     }
 
     public void Look()
@@ -115,6 +136,6 @@ public class PlayerMovement : MonoBehaviour
         this.knockbackDuration = knockbackRange / knockbackSpeed;
         this.knockbackStart = Time.time;
         playerRB.velocity = knockbackDirection * knockbackSpeed;
-        this.knockback = true;
+        this.movementState = MovementState.Knockback;
     }
 }

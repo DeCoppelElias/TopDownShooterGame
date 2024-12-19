@@ -9,16 +9,14 @@ public class SplitAbility : MonoBehaviour
         float currentSplitAmount = GetComponent<SplitMeleeEnemy>().splitAmount;
         if (currentSplitAmount < 3)
         {
-            float currentMaxHealth = GetComponent<Entity>().maxHealth;
             Rigidbody2D rb = GetComponent<Rigidbody2D>();
             Vector3 throwDirection1 = Quaternion.Euler(0, 0, -90) * moveDirection;
             Vector3 throwDirection2 = Quaternion.Euler(0, 0, 90) * moveDirection;
 
-            
             GameObject clone1 = Instantiate(this.gameObject, transform.position + throwDirection1 * (transform.localScale / 4).x, Quaternion.identity,transform.parent);
             clone1.transform.localScale = transform.localScale / 2;
-            clone1.GetComponent<Entity>().maxHealth = currentMaxHealth / 2;
-            clone1.GetComponent<Entity>().health = currentMaxHealth / 2;
+            clone1.GetComponent<Entity>().maxHealth = GetComponent<Entity>().maxHealth / 2;
+            clone1.GetComponent<Entity>().health = GetComponent<Entity>().maxHealth / 2;
             clone1.GetComponent<Entity>().damage = GetComponent<Entity>().damage / 2;
             clone1.GetComponent<Entity>().onDeathScore = GetComponent<Entity>().onDeathScore / 4;
             clone1.GetComponent<Entity>().lastValidPosition = GetComponent<Entity>().lastValidPosition;

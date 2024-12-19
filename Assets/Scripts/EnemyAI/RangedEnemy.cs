@@ -33,9 +33,9 @@ public class RangedEnemy : Enemy
         // Walk to player
         Vector3 raycastDirection = player.transform.position - transform.position;
         RaycastHit2D[] rays = Physics2D.RaycastAll(transform.position, raycastDirection, Vector2.Distance(transform.position, player.transform.position));
-        if (Vector2.Distance(gameObject.transform.position, player.transform.position) > range || RaycastContainsWall(rays))
+        if (Vector2.Distance(gameObject.transform.position, player.transform.position) > range || RaycastContainsObstacle(rays))
         {
-            WalkToPlayer();
+            WalkToPlayerUpdate();
         }
 
         // Shoot at player
@@ -43,7 +43,7 @@ public class RangedEnemy : Enemy
         {
             if (playerInRange && Time.time - startPlayerInRange > aimingDuration)
             {
-                if (!RaycastContainsWall(rays))
+                if (!RaycastContainsObstacle(rays))
                 {
                     GetComponent<ShootingAbility>().TryShootOnce();
                 }

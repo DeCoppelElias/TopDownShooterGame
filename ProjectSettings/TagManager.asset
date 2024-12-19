@@ -14,6 +14,7 @@ TagManager:
   - ReflectWall
   - Player2
   - RecordingCamera
+  - Pit
   layers:
   - Default
   - TransparentFX
@@ -50,6 +51,15 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 2774863399
+    locked: 0
+  - name: Wall
+    uniqueID: 3068475531
+    locked: 0
+  - name: Pit
+    uniqueID: 2084432647
     locked: 0
   - name: Entitiy
     uniqueID: 1934459445

@@ -6,24 +6,33 @@ using UnityEngine.Tilemaps;
 
 public class PathFinding : MonoBehaviour
 {
-    private HashSet<Vector3> visited;
-    private float size = 0;
-    private float stepSize = 0.25f;
+    [Header("Size of the entity")]
+    [SerializeField] private bool customSize = false;
+    [SerializeField] private float size = 0;
 
-    [Header("Debug Settings")]
-    [SerializeField] private LineRenderer debugLineRenderer;
+    [Header("Pathfinding settings")]
+    [SerializeField] private float stepSize = 0.25f;
+    [SerializeField] private int maxIterations = 1000;
+
+    [Header("Display settings")]
+    [SerializeField] private LineRenderer displayLineRenderer;
 
     private void Start()
     {
-        Collider2D collider = GetComponentInChildren<Collider2D>();
-        if (collider != null)
+        // Initialise size
+        if (!customSize)
         {
-            size = collider.bounds.size.x;
+            Collider2D collider = GetComponentInChildren<Collider2D>();
+            if (collider != null)
+            {
+                size = collider.bounds.size.x;
+            }
         }
-
-        // Debug
-        debugLineRenderer = GameObject.Find("DebugLineRenderer")?.GetComponent<LineRenderer>();
     }
+
+    /// <summary>
+    /// A GridTile class represents a node in a graph like structure needed for the A* shortest path implementation.
+    /// </summary>
     public class GridTile : IComparable<GridTile>
     {
         public GridTile previous;
@@ -45,133 +54,186 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    public List<Vector3> FindDepthFirstPath(Vector3 from, Vector3 to)
+    /// <summary>
+    /// Priority Queue, written by Chatgtp.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class PriorityQueue<T> where T : IComparable<T>
     {
-        visited = new HashSet<Vector3>();
-        GridTile fromGT = new GridTile(from, null, Vector3.Distance(from, to));
-        GridTile GT = DepthFirstHelper(fromGT, to);
-        List<Vector3> result = new List<Vector3>();
-        GridTile currentGT = GT;
-        while (currentGT != null)
-        {
-            result.Add(currentGT.location);
-            currentGT = currentGT.previous;
-        }
-        result.Reverse();
-        return result;
-    }
+        private List<T> elements = new List<T>();
 
-    private GridTile DepthFirstHelper(GridTile from, Vector3 to, int counter=0)
-    {
-        if (counter > 100) return null;
+        public int Count => elements.Count;
 
-        List<Vector3> neighbours = GetNeighbours(from.location);
-        List<GridTile> activeTiles = new List<GridTile>();
-        foreach (Vector3 neighbour in neighbours)
+        public void Enqueue(T item)
         {
-            GridTile gridTile = new GridTile(neighbour, from, Vector3.Distance(neighbour, to));
-            if (gridTile.location == to)
+            elements.Add(item);
+            int c = elements.Count - 1;
+
+            // Percolate up
+            while (c > 0)
             {
-                return gridTile;
-            }
-            else
-            {
-                activeTiles.Add(gridTile);
-                visited.Add(neighbour);
+                int p = (c - 1) / 2; // Parent index
+                if (elements[c].CompareTo(elements[p]) >= 0)
+                    break;
+
+                // Swap child and parent
+                T temp = elements[c];
+                elements[c] = elements[p];
+                elements[p] = temp;
+                c = p;
             }
         }
-        activeTiles.Sort();
-        foreach (GridTile gridTile in activeTiles)
+
+        public T Dequeue()
         {
-            GridTile solution = DepthFirstHelper(gridTile, to, counter+1);
-            if (solution != null)
+            int lastIndex = elements.Count - 1;
+
+            // Swap root with the last element
+            T root = elements[0];
+            elements[0] = elements[lastIndex];
+            elements.RemoveAt(lastIndex);
+
+            // Percolate down
+            int c = 0;
+            while (true)
             {
-                return solution;
+                int left = 2 * c + 1;
+                int right = 2 * c + 2;
+
+                if (left >= elements.Count) break;
+
+                int min = left;
+                if (right < elements.Count && elements[right].CompareTo(elements[left]) < 0)
+                    min = right;
+
+                if (elements[c].CompareTo(elements[min]) <= 0)
+                    break;
+
+                // Swap parent and child
+                T temp = elements[c];
+                elements[c] = elements[min];
+                elements[min] = temp;
+                c = min;
             }
+
+            return root;
         }
-        return null;
     }
 
     /// <summary>
-    /// Find a depth first path untill the final position is visible (no walls in between).
+    /// This method finds the shortest path between two positions with A*. Written by Chatgtp.
     /// </summary>
-    /// <param name="from"></param>
-    /// <param name="to"></param>
+    /// <param name="start"></param>
+    /// <param name="target"></param>
     /// <returns></returns>
-    public List<Vector3> FindPathDepthFirstVisibility(Vector3 from, Vector3 to)
+    public List<Vector3> FindShortestPath(Vector3 start, Vector3 target)
     {
-        visited = new HashSet<Vector3>();
-        GridTile fromGT = new GridTile(from, null, Vector3.Distance(from, to));
-        GridTile GT = DepthFirstVisibilityHelper(fromGT, to);
-        List<Vector3> result = new List<Vector3>();
-        GridTile currentGT = GT;
-        while (currentGT != null)
-        {
-            result.Add(currentGT.location);
-            currentGT = currentGT.previous;
-        }
-        result.Reverse();
+        // Initialize the open and closed sets
+        PriorityQueue<GridTile> openSet = new PriorityQueue<GridTile>();
+        HashSet<Vector3> visited = new HashSet<Vector3>();
+        openSet.Enqueue(new GridTile(start, null, 0));
 
-        return result;
+        int iteration = 0;
+        while (openSet.Count > 0 && iteration < this.maxIterations)
+        {
+            GridTile current = openSet.Dequeue();
+
+            // If we've reached the target, reconstruct the path
+            if (Vector3.Distance(current.location, target) < stepSize)
+            {
+                return ReconstructPath(current);
+            }
+
+            if (visited.Contains(current.location))
+                continue;
+
+            visited.Add(current.location);
+
+            // Explore neighbors
+            foreach (Vector3 neighbor in GetNeighbors(current.location))
+            {
+                if (visited.Contains(neighbor) || CheckValidPosition(neighbor))
+                    continue;
+
+                float newPriority = Vector3.Distance(neighbor, target);
+                openSet.Enqueue(new GridTile(neighbor, current, newPriority));
+            }
+
+            iteration++;
+        }
+
+        // Return an empty path if no path is found
+        return new List<Vector3>();
     }
 
-    private GridTile DepthFirstVisibilityHelper(GridTile from, Vector3 to, int counter = 0)
+    /// <summary>
+    /// Checks wether a certain position is valid by checking if it isn't too close to some obstacle. 
+    /// </summary>
+    /// <param name="location"></param>
+    /// <returns></returns>
+    public bool CheckValidPosition(Vector3 location)
     {
-        if (counter > 100)
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(location, 0.35f * size);
+        foreach (Collider2D collider in colliders)
         {
-            Debug.Log("Did not find path!");
-            return null;
-        }
-
-        List<Vector3> neighbours = GetNeighbours(from.location);
-        List<GridTile> activeTiles = new List<GridTile>();
-        foreach (Vector3 neighbour in neighbours)
-        {
-            GridTile gridTile = new GridTile(neighbour, from, Vector3.Distance(neighbour, to));
-            if (!IsWallInBetween(gridTile.location, to) || Vector3.Distance(gridTile.location, to) < 0.4f * size)
-            {
-                return gridTile;
-            }
-            else
-            {
-                activeTiles.Add(gridTile);
-                visited.Add(neighbour);
-            }
-        }
-
-        activeTiles.Sort();
-        foreach (GridTile gridTile in activeTiles)
-        {
-            GridTile solution = DepthFirstVisibilityHelper(gridTile, to, counter + 1);
-            if (solution != null)
-            {
-                return solution;
-            }
-        }
-        return null;
-    }
-
-    public bool RaycastContainsWall(RaycastHit2D[] rays)
-    {
-        foreach (RaycastHit2D ray in rays)
-        {
-            if (ray.transform.CompareTag("Wall"))
-            {
-                return true;
-            }
+            if (collider.CompareTag("Wall") || collider.CompareTag("Pit")) return true;
         }
         return false;
     }
 
+    /// <summary>
+    /// This method reconstructs a path from the GridTile class.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <returns></returns>
+    private List<Vector3> ReconstructPath(GridTile tile)
+    {
+        List<Vector3> path = new List<Vector3>();
+        while (tile != null)
+        {
+            path.Add(tile.location);
+            tile = tile.previous;
+        }
+        path.Reverse();
+        return path;
+    }
+
+    /// <summary>
+    /// This method returns the neighboring positions based on the stepsize.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    private List<Vector3> GetNeighbors(Vector3 position)
+    {
+        List<Vector3> neighbors = new List<Vector3>
+        {
+            position + new Vector3(stepSize, 0, 0),
+            position + new Vector3(-stepSize, 0, 0),
+            position + new Vector3(0, stepSize, 0),
+            position + new Vector3(0, -stepSize, 0)
+        };
+
+        return neighbors;
+    }
+
+    /// <summary>
+    /// Displays a route.
+    /// </summary>
+    /// <param name="route"></param>
     public void DisplayRoute(List<Vector3> route)
     {
-        if (debugLineRenderer != null)
+        if (displayLineRenderer != null)
         {
-            debugLineRenderer.positionCount = route.Count;
-            debugLineRenderer.SetPositions(route.ToArray());
+            displayLineRenderer.positionCount = route.Count;
+            displayLineRenderer.SetPositions(route.ToArray());
         }
     }
 
+    /// <summary>
+    /// Smooths a route by removing unnecessary points on a line without obstacles in between.
+    /// </summary>
+    /// <param name="route"></param>
+    /// <returns></returns>
     public List<Vector3> SmoothRoute(List<Vector3> route)
     {
         List<Vector3> newRoute = new List<Vector3>();
@@ -183,7 +245,7 @@ public class PathFinding : MonoBehaviour
         {
             int j = i + 2;
 
-            while (j < route.Count && !IsWallInBetween(route[i], route[j]))
+            while (j < route.Count && !IsObstacleInBetween(route[i], route[j]))
             {
                 j++;
             }
@@ -194,11 +256,17 @@ public class PathFinding : MonoBehaviour
         return newRoute;
     }
 
-    public bool IsWallInBetween(Vector3 from, Vector3 to)
+    /// <summary>
+    /// Checks whether there is an obstacle in between two points.
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
+    public bool IsObstacleInBetween(Vector3 from, Vector3 to)
     {
         Vector3 raycastDirection = (to - from).normalized;
         RaycastHit2D[] rays = Physics2D.RaycastAll(from, raycastDirection, Vector3.Distance(from, to));
-        if (RaycastContainsWall(rays)) return true;
+        if (RaycastHitsObstacle(rays)) return true;
 
         // Perpendicular vectors
         Vector3 perpendicular1 = new Vector3(-raycastDirection.y, raycastDirection.x, raycastDirection.z);
@@ -207,58 +275,31 @@ public class PathFinding : MonoBehaviour
         Vector3 newFrom1 = from + (size * perpendicular1);
         raycastDirection = (to - newFrom1).normalized;
         rays = Physics2D.RaycastAll(newFrom1, raycastDirection, Vector3.Distance(newFrom1, to));
-        if (RaycastContainsWall(rays)) return true;
+        if (RaycastHitsObstacle(rays)) return true;
 
         Vector3 newFrom2 = from + (size * perpendicular2);
         raycastDirection = (to - newFrom2).normalized;
         rays = Physics2D.RaycastAll(newFrom2, raycastDirection, Vector3.Distance(newFrom2, to));
-        if (RaycastContainsWall(rays)) return true;
+        if (RaycastHitsObstacle(rays)) return true;
 
         return false;
     }
 
-    public List<Vector3> GetNeighbours(Vector3 location)
+    /// <summary>
+    /// Checks whether a raycast has hit an obstacle.
+    /// </summary>
+    /// <param name="rays"></param>
+    /// <returns></returns>
+    public bool RaycastHitsObstacle(RaycastHit2D[] rays)
     {
-        List<Vector3> neighbours = new List<Vector3>();
-
-        Vector3 right = location + new Vector3(stepSize, 0, 0);
-        if (!LocationHasWall(right) && !visited.Contains(right))
+        foreach (RaycastHit2D ray in rays)
         {
-            neighbours.Add(right);
-        }
-        Vector3 left = location + new Vector3(-stepSize, 0, 0);
-        if (!LocationHasWall(left) && !visited.Contains(left))
-        {
-            neighbours.Add(left);
-        }
-        Vector3 up = location + new Vector3(0, stepSize, 0);
-        if (!LocationHasWall(up) && !visited.Contains(up))
-        {
-            neighbours.Add(up);
-        }
-        Vector3 down = location + new Vector3(0, -stepSize, 0);
-        if (!LocationHasWall(down) && !visited.Contains(down))
-        {
-            neighbours.Add(down);
-        }
-        return neighbours;
-    }
-
-    public bool LocationHasWall(Vector3 location)
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(location, 0.35f * size);
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.CompareTag("Wall")) return true;
+            if (ray.transform.CompareTag("Wall") || ray.transform.CompareTag("Pit"))
+            {
+                return true;
+            }
         }
         return false;
-        
-        /*TileBase wall = walls.GetTile(Vector3Int.FloorToInt(location));
-        if(wall == null)
-        {
-            return false;
-        }
-        return true;*/
     }
 }
 

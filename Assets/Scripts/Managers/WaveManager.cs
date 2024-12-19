@@ -8,8 +8,6 @@ using UnityEngine.Tilemaps;
 
 public class WaveManager : MonoBehaviour
 {
-    public string levelsFilePath = "Assets/Levels/";
-
     [Header("Level Settings")]
     [SerializeField] private int waveIndex = 0;
     [SerializeField] private int levelIndex = 0;
@@ -64,7 +62,6 @@ public class WaveManager : MonoBehaviour
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
 
-        LoadLevel(this.levelIndex);
         SetupCurrentLevel();
     }
 
@@ -133,15 +130,16 @@ public class WaveManager : MonoBehaviour
 
     private void LoadLevel(int levelIndex)
     {
-        string path = $"{levelsFilePath}level{levelIndex}.json";
+        string path = $"Levels/level{levelIndex}";
+        TextAsset jsonFile = Resources.Load<TextAsset>(path);
 
-        if (!File.Exists(path))
+        if (jsonFile == null)
         {
             Debug.LogError("Level json does not exist: " + path);
             return;
         }
 
-        string json = File.ReadAllText(path);
+        string json = jsonFile.text;
         Level level = JsonUtility.FromJson<Level>(json);
 
         if (level == null)
@@ -226,6 +224,13 @@ public class WaveManager : MonoBehaviour
         Level level = GetLevel(this.levelIndex);
 
         return level.GetPlayerSpawnLocation();
+    }
+
+    public bool InsideLevel(Vector3 position)
+    {
+        Level level = GetLevel(this.levelIndex);
+
+        return level.InsideLevel(position);
     }
 
     private bool CheckLastWave()
@@ -327,6 +332,9 @@ public class WaveManager : MonoBehaviour
         public List<Location> spawnLocations;
         public List<Wave> waves;
 
+        public float roomWidth;
+        public float roomHeight;
+
         public Wave GetWave(int index)
         {
             if (index < waves.Count && index >= 0)
@@ -375,6 +383,17 @@ public class WaveManager : MonoBehaviour
                     Debug.Log($"Enemy Type: {enemy.type}, Amount: {enemy.amount}");
                 }
             }
+        }
+
+        public bool InsideLevel(Vector3 position)
+        {
+            if (position.x < this.roomLocation.x - this.roomWidth) return false;
+            if (position.x > this.roomLocation.x + this.roomWidth) return false;
+
+            if (position.y < this.roomLocation.y - this.roomHeight) return false;
+            if (position.y > this.roomLocation.y + this.roomHeight) return false;
+
+            return true;
         }
     }
 

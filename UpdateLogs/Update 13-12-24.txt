@@ -1,0 +1,4 @@
+Updated path finding
+Updated level loading
+Added crown for top leaderboard player
+Added additional sprites for player character

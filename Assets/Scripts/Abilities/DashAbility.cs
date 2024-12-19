@@ -45,6 +45,17 @@ public class DashAbility : MonoBehaviour
         chargeStart = Time.time;
     }
 
+    public bool TryDash(Vector2 direction)
+    {
+        if (dashingState != DashingState.Ready) return false;
+        if (direction == Vector2.zero) return false;
+
+        dashingState = DashingState.Charging;
+        this.dashDirection = direction;
+        chargeStart = Time.time;
+        return true;
+    }
+
     private void Update()
     {
         if (dashingState == DashingState.Cooldown)

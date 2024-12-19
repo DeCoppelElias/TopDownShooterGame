@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 
 public abstract class Entity : MonoBehaviour
 {
+    [Header("Basic Entity Stats")]
     public float maxHealth = 100;
     public float health = 100;
     public float damage = 10;
@@ -13,61 +14,67 @@ public abstract class Entity : MonoBehaviour
 
     public float contactDamage = 10;
     public float contactHitCooldown = 1f;
+    private float lastContactHit = 0;
 
-    private float lastHit = 0;
+    public int onDeathScore = 100;
+
+    [Header("Out Of Bounds Settings")]
+    public Vector3 lastValidPosition;
+    [SerializeField] private float updateValidPositionCooldown = 2f;
+    private float lastValidPositionUpdate = 0;
+    [SerializeField] private bool outOfBounds = false;
+    [SerializeField] private float allowedOutOfBoundsDuration = 1f;
+    private float outOfBoundsStart = 0;
+    private int outOfBoundsCounter = 0;
+
+    public enum DamageType { Ranged, Melee }
+    private DamageType lastDamageType;
+    private Entity lastDamageSource;
+
+    protected AudioManager audioManager;
+    private WaveManager waveManager;
 
     private Transform healthBar;
     private Transform emptyHealthBar;
 
     private Tilemap walls;
-
-    public Vector3 lastValidPosition;
-    [SerializeField]
-    private float updateValidPositionCooldown = 2f;
-    private float lastValidPositionUpdate = 0;
-
-    [SerializeField]
-    private bool outOfBounds = false;
-    [SerializeField]
-    private float allowedOutOfBoundsDuration = 1f;
-    private float outOfBoundsStart = 0;
-
-    private int outOfBoundsCounter = 0;
-
-    private Entity lastDamageSource;
-    public enum DamageType { Ranged, Melee }
-    private DamageType lastDamageType;
-
-    public int onDeathScore = 100;
-
-    protected AudioManager audioManager;
+    private Tilemap pits;
 
     private void Start()
     {
         walls = GameObject.Find("Walls").GetComponent<Tilemap>();
+        pits = GameObject.Find("Pits").GetComponent<Tilemap>();
         audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+        waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
 
         emptyHealthBar = transform.Find("EmptyHealthBar");
         healthBar = emptyHealthBar.GetChild(0);
 
-        if (CheckOutOfBounds(this.transform.position)) lastValidPosition = this.transform.position;
+        if (CheckOutOfBounds()) lastValidPosition = this.transform.position;
 
         StartEntity();
     }
     private void Update()
     {
-        float scale = health / maxHealth;
-        healthBar.localScale = new Vector3(scale,1,1);
+        if (health <= 0)
+        {
+            OnDeath();
+            return;
+        }
+
+        UpdateHealthBar();
 
         EnforceValidPosition();
 
         UpdateEntity();
-
-        if (health <= 0)
-        {
-            OnDeath();
-        }
     }
+
+    private void UpdateHealthBar()
+    {
+        float scale = health / maxHealth;
+        healthBar.localScale = new Vector3(scale, 1, 1);
+    }
+
 
     public virtual void OnDeath()
     {
@@ -117,25 +124,26 @@ public abstract class Entity : MonoBehaviour
         if (collision.transform.CompareTag("Enemy") && this.transform.CompareTag("Enemy")) return;
 
         Entity entity = collision.gameObject.GetComponent<Entity>();
-        if (entity != null && Time.time - lastHit > contactHitCooldown)
+        if (entity != null && Time.time - lastContactHit > contactHitCooldown)
         {
-            lastHit = Time.time;
+            lastContactHit = Time.time;
 
             entity.TakeDamage(contactDamage, this, DamageType.Melee);
         }
     }
 
-    public bool CheckOutOfBounds(Vector3 position)
+    private bool CheckOutOfBounds()
     {
-        if (walls.GetTile(Vector3Int.FloorToInt(this.transform.position)) != null) return true;
-        if (this.transform.position.x < -9.5f || this.transform.position.x > 9.5) return true;
+        if (walls != null && walls.GetTile(Vector3Int.FloorToInt(this.transform.position)) != null) return true;
+        if (pits != null && pits.GetTile(Vector3Int.FloorToInt(this.transform.position)) != null) return true;
+        if (waveManager != null && !waveManager.InsideLevel(this.transform.position)) return true;
 
         return false;
     }
 
-    public void EnforceValidPosition()
+    private void EnforceValidPosition()
     {
-        if (CheckOutOfBounds(this.transform.position))
+        if (CheckOutOfBounds())
         {
             if (!outOfBounds)
             {
@@ -154,10 +162,9 @@ public abstract class Entity : MonoBehaviour
                     else
                     {
                         Vector3 safePosition = new Vector3(0, 0, 0);
-                        GameObject waveManager = GameObject.Find("WaveManager");
                         if (waveManager != null)
                         {
-                            safePosition = waveManager.GetComponent<WaveManager>().GetSafePosition();
+                            safePosition = waveManager.GetSafePosition();
                         }
                         
                         this.transform.position = safePosition;

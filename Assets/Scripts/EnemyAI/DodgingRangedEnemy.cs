@@ -36,9 +36,14 @@ public class DodgingRangedEnemy : RangedEnemy
             dashAbility.Dash(dashDirection);
             bulletTrigger = false;
         }
-        else if (Vector2.Distance(gameObject.transform.position, player.transform.position) > GetRange() || RaycastContainsWall(rays))
+        else if (Vector2.Distance(gameObject.transform.position, player.transform.position) > GetRange() || RaycastContainsObstacle(rays))
         {
-            WalkToPlayer();
+            WalkToPlayerUpdate();
         }
+    }
+
+    public void DodgeBullet(Vector3 bulletDirection)
+    {
+
     }
 }
